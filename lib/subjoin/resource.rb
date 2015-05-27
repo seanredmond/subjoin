@@ -21,6 +21,18 @@ module Subjoin
       end
     end
 
+    def initialize(data)
+      if data.is_a?(Hash)
+        @data = data
+      else
+        response = get(data)
+      end
+    end
+
+    def get(id)
+      resp = @@conn.get [self.request_path, id].join('/')
+    end
+    
     def root
       return self.class.root
     end
