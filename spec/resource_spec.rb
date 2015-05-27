@@ -11,6 +11,9 @@ end
 
 describe Subjoin::Resource do
   before :each do
+    allow_any_instance_of(Faraday::Connection).
+      to receive(:get).and_return(double(Faraday::Response, :body => "{}"))
+    
     @article = Article.new(1)
   end
 
@@ -54,16 +57,21 @@ describe Subjoin::Resource do
   end
 
   describe "#new" do
-    before :each do
-      allow_any_instance_of(Faraday::Connection).
-        to receive(:get).and_return(double(Faraday::Response))
-    end
-    
     context "with an id passed as a parameter"  do
       it "should make a request to the correct URL" do
         expect_any_instance_of(Faraday::Connection)
           .to receive(:get).with("http://example.com/article/2")
+               .and_return(double(Faraday::Response, :body => "{}"))
         Article.new(2)
+      end
+    end
+
+    context "with an id that will result in an error" do
+      it "should raise an error" do
+        response_double = double(Faraday::Response, :body => ERR404, :headers => {}, :status => 404)
+        allow_any_instance_of(Faraday::Connection).
+          to receive(:get).and_return(response_double)
+        expect { Article.new(0) }.to raise_error(Subjoin::ResponseError)
       end
     end
   end

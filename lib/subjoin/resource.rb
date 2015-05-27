@@ -30,7 +30,11 @@ module Subjoin
     end
 
     def get(id)
-      resp = @@conn.get [self.request_path, id].join('/')
+      response = @@conn.get [self.request_path, id].join('/')
+      data = JSON.parse response.body
+      if data.has_key?("errors")
+        raise ResponseError.new
+      end
     end
     
     def root
