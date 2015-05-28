@@ -28,6 +28,16 @@ describe Subjoin::Resource do
       expect(@article.type).to eq "articles"
     end
   end
+
+  describe "automatic attributes" do
+    it "should have a title attribute" do
+      expect(@article.title).to eq "JSON API paints my bikeshed!"
+    end
+
+    it "should raise an error if there is no such attribute" do
+      expect { @article.nosuchthing }.to raise_error(NoMethodError)
+    end
+  end
   
   describe "#root" do
     context "when it has not been overriden" do
