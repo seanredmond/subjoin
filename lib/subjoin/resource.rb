@@ -1,6 +1,6 @@
 module Subjoin
   class Resource
-
+    attr_accessor :id
     @@conn = Faraday.new
 
     class << self
@@ -26,6 +26,7 @@ module Subjoin
         @data = data
       else
         response = get(data)
+        @id = response['data']['id']
       end
     end
 
@@ -35,6 +36,8 @@ module Subjoin
       if data.has_key?("errors")
         raise ResponseError.new
       end
+
+      return data
     end
     
     def root

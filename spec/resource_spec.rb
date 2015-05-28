@@ -17,6 +17,12 @@ describe Subjoin::Resource do
     @article = Article.new(1)
   end
 
+  describe "#id" do
+    it "should equal the id of the respnse" do
+      expect(@article.id).to eq "1"
+    end
+  end
+  
   describe "#root" do
     context "when it has not been overriden" do
       it "should raise an error" do
@@ -61,7 +67,7 @@ describe Subjoin::Resource do
       it "should make a request to the correct URL" do
         expect_any_instance_of(Faraday::Connection)
           .to receive(:get).with("http://example.com/article/2")
-               .and_return(double(Faraday::Response, :body => "{}"))
+               .and_return(double(Faraday::Response, :body => ARTICLE))
         Article.new(2)
       end
     end
