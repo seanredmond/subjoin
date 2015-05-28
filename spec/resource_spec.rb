@@ -49,6 +49,15 @@ describe Subjoin::Resource do
                       new(URI("http://example.com/articles/2"))
           
         end
+
+        it "should raise an error if the response is not a single object" do
+          expect_any_instance_of(Faraday::Connection)
+            .to receive(:get)
+                 .and_return(double(Faraday::Response, :body => COMPOUND))
+          expect { Subjoin::Resource.
+                   new(URI("http://example.com/articles")) }
+            .to raise_error(Subjoin::UnexpectedTypeError)
+        end
       end
     end
   end

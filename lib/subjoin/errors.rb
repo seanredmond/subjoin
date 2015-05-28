@@ -8,4 +8,6 @@ module Subjoin
   end
 
   class ResponseError < Error; end
+
+  class UnexpectedTypeError < Error; end
 end
