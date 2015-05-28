@@ -1,6 +1,6 @@
 module Subjoin
   class Resource
-    attr_accessor :id
+    attr_accessor :id, :type
     @@conn = Faraday.new
 
     class << self
@@ -27,6 +27,7 @@ module Subjoin
       else
         response = get(data)
         @id = response['data']['id']
+        @type = response['data']['type']
       end
     end
 

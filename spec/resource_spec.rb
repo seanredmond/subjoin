@@ -23,6 +23,12 @@ describe Subjoin::Resource do
     end
   end
   
+  describe "#type" do
+    it "should equal the type of the respnse" do
+      expect(@article.type).to eq "articles"
+    end
+  end
+  
   describe "#root" do
     context "when it has not been overriden" do
       it "should raise an error" do
