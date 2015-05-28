@@ -12,7 +12,7 @@ end
 describe Subjoin::Resource do
   before :each do
     allow_any_instance_of(Faraday::Connection).
-      to receive(:get).and_return(double(Faraday::Response, :body => "{}"))
+      to receive(:get).and_return(double(Faraday::Response, :body => COMPOUND))
     
     @article = Article.new(1)
   end
