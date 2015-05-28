@@ -13,88 +13,25 @@ describe Subjoin::Resource do
   before :each do
     allow_any_instance_of(Faraday::Connection).
       to receive(:get).and_return(double(Faraday::Response, :body => ARTICLE))
-    
-    @article = Article.new(1)
   end
 
-  describe "#id" do
-    it "should equal the id of the respnse" do
-      expect(@article.id).to eq "1"
-    end
-  end
-  
-  describe "#type" do
-    it "should equal the type of the respnse" do
-      expect(@article.type).to eq "articles"
+  describe "#get" do
+    it "should return parsed JSON" do
+      expect(Subjoin::Resource.get(URI("http://example.com/articles"))).
+        to be_an_instance_of(Hash)
     end
   end
 
-  describe "automatic attributes" do
-    it "should have a title attribute" do
-      expect(@article.title).to eq "JSON API paints my bikeshed!"
-    end
-
-    it "should raise an error if there is no such attribute" do
-      expect { @article.nosuchthing }.to raise_error(NoMethodError)
-    end
-  end
-  
-  describe "#root" do
-    context "when it has not been overriden" do
-      it "should raise an error" do
-        class BadBase < Subjoin::Resource; end
-        expect { BadBase.new(0) }.to raise_error(Subjoin::NoOverriddenRootError)
-      end
-    end
-    
-    context "when it has been overriden" do
-      it "should be a URL" do
-        expect(@article.root).to eq "http://example.com"
-      end
-    end
-  end
-
-  describe "#classname" do
-    it "should be a lowercased version of the class" do
-      expect(@article.classname).to eq "article"
-    end
-  end
-
-  describe "#request_path" do
-    it "should return the correct combo of root and name" do
-      expect(@article.request_path).to eq "http://example.com/article"
-    end
-  end
-
-  describe "#all" do
-    it "should make a request to the correct URL" do
+  describe "resources" do
+    before :each do
       allow_any_instance_of(Faraday::Connection).
-        to receive(:get).and_return(double(Faraday::Response))
-
-      expect_any_instance_of(Faraday::Connection)
-        .to receive(:get).with("http://example.com/article")
-
-      Article.all
-    end
-  end
-
-  describe "#new" do
-    context "with an id passed as a parameter"  do
-      it "should make a request to the correct URL" do
-        expect_any_instance_of(Faraday::Connection)
-          .to receive(:get).with("http://example.com/article/2")
-               .and_return(double(Faraday::Response, :body => ARTICLE))
-        Article.new(2)
-      end
+        to receive(:get).
+            and_return(double(Faraday::Response, :body => COMPOUND))
     end
 
-    context "with an id that will result in an error" do
-      it "should raise an error" do
-        response_double = double(Faraday::Response, :body => ERR404, :headers => {}, :status => 404)
-        allow_any_instance_of(Faraday::Connection).
-          to receive(:get).and_return(response_double)
-        expect { Article.new(0) }.to raise_error(Subjoin::ResponseError)
-      end
+    it "should return parsed JSON" do
+      expect(Subjoin::Resource.resources(URI("http://example.com/articles/1"))).
+        to be_an_instance_of(Hash)
     end
   end
 end
