@@ -39,4 +39,22 @@ describe Subjoin::Resource do
       end
     end
   end
+
+  describe "simple methods" do
+    before :each do
+      @article = Subjoin::Resource.new(URI("http://example.com/articles/1"))
+    end
+
+    it "should have an id" do
+      expect(@article.id).to eq "1"
+    end
+
+    it "should have a type" do
+      expect(@article.type).to eq "articles"
+    end
+
+    it "should have automatic attributes" do
+      expect(@article.title).to eq "JSON API paints my bikeshed!"
+    end
+  end
 end

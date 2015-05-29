@@ -9,6 +9,10 @@ module Subjoin
         if data['data'].is_a?(Array)
           raise UnexpectedTypeError.new
         end
+
+        @id = data['data']['id']
+        @type = data['data']['type']
+        @attributes = data['data']['attributes']
       end
     end
         
