@@ -17,6 +17,7 @@ module Subjoin
       @type = data['data']['type']
       @attributes = data['data']['attributes']
       @links = load_objects(data['data']['links'], Link)
+      @relationships = load_objects(data['data']['relationships'], Relationship)
     end
 
     def links(spec = nil)

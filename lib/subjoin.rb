@@ -2,7 +2,10 @@ require "faraday"
 require "json"
 require "subjoin/errors"
 require "subjoin/link"
+require "subjoin/links"
+require "subjoin/linkable"
 require "subjoin/resource"
+require "subjoin/relationship"
 require "subjoin/version"
 
 module Subjoin
