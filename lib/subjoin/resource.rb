@@ -16,7 +16,7 @@ module Subjoin
       @id = data['data']['id']
       @type = data['data']['type']
       @attributes = data['data']['attributes']
-      @links = load_links(data['data']['links'])
+      @links = load_objects(data['data']['links'], Link)
     end
 
     def links(spec = nil)
@@ -33,10 +33,10 @@ module Subjoin
     end
 
     private
-    def load_links(links)
-      return {} if links.nil?
+    def load_objects(data, type)
+      return {} if data.nil?
 
-      Hash[links.map{|k, v| [k, Link.new(v)]}]
+      Hash[data.map{|k, v| [k, type.new(v)]}]
     end
   end
 end
