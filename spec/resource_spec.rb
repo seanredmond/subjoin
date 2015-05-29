@@ -37,6 +37,12 @@ describe Subjoin::Resource do
             .to raise_error(Subjoin::UnexpectedTypeError)
         end
       end
+
+      context "passing a hash as a parameter" do
+        it "should succeed" do
+          expect(Subjoin::Resource.new(JSON.parse(ARTICLE)).id).to eq "1"
+        end
+      end
     end
   end
 

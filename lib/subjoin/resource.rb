@@ -5,16 +5,18 @@ module Subjoin
     def initialize(spec)
       if spec.is_a?(URI)
         data = Subjoin::get(spec)
-
-        if data['data'].is_a?(Array)
-          raise UnexpectedTypeError.new
-        end
-
-        @id = data['data']['id']
-        @type = data['data']['type']
-        @attributes = data['data']['attributes']
-        @links = load_links(data['data']['links'])
+      elsif spec.is_a?(Hash)
+        data = spec
       end
+
+      if data['data'].is_a?(Array)
+        raise UnexpectedTypeError.new
+      end
+
+      @id = data['data']['id']
+      @type = data['data']['type']
+      @attributes = data['data']['attributes']
+      @links = load_links(data['data']['links'])
     end
 
     def links(spec = nil)
