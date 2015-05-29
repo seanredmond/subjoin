@@ -13,7 +13,13 @@ module Subjoin
         @id = data['data']['id']
         @type = data['data']['type']
         @attributes = data['data']['attributes']
+        @links = load_links(data['data']['links'])
       end
+    end
+
+    def links(spec = nil)
+      return @links if spec.nil?
+      @links[spec]
     end
         
     def method_missing name, *args
@@ -22,7 +28,14 @@ module Subjoin
         return @attributes[name]
       end
       raise NoMethodError, "undefined method `#{name}' for #{self}"
-    end    
+    end
+
+    private
+    def load_links(links)
+      return {} if links.nil?
+
+      Hash[links.map{|k, v| [k, Link.new(v)]}]
+    end
   end
 end
 
