@@ -13,7 +13,8 @@ describe Subjoin::Relationship do
   end
 
   it "has the right links" do
-    expect(@r.links.links.keys).to eq ["self", "related"]
+    
+    expect(@r.links.keys).to eq ["self", "related"]
   end
     
 end

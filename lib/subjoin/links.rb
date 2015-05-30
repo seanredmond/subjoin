@@ -5,6 +5,10 @@ module Subjoin
       @links = load_links(data)
     end
 
+    def keys
+      @links.keys
+    end
+
     private
     def load_links(data)
       return {} if data.nil?

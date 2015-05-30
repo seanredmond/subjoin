@@ -3,7 +3,7 @@ module Subjoin
     @links = nil
 
     def links
-      @links ||= nil
+      @links ||= {}
     end
       
     def load_links(data)
