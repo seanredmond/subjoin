@@ -1,6 +1,6 @@
 module Subjoin
   class Resource
-    attr_accessor :id, :type
+    include Keyable
 
     def initialize(spec)
       if spec.is_a?(URI)
@@ -13,8 +13,7 @@ module Subjoin
         raise UnexpectedTypeError.new
       end
 
-      @id = data['data']['id']
-      @type = data['data']['type']
+      load_key(data['data'])
       @attributes = data['data']['attributes']
       @links = load_objects(data['data']['links'], Link)
       @relationships = load_objects(data['data']['relationships'], Relationship)
