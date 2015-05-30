@@ -9,6 +9,10 @@ module Subjoin
       @links.keys
     end
 
+    def [](k)
+      @links[k]
+    end
+    
     private
     def load_links(data)
       return {} if data.nil?
