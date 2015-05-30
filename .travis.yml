@@ -11,3 +11,10 @@ rvm:
 - rbx-2.1.1
 - rbx-2.0.0
 - 1.8.7
+matrix:
+  allow_failures:
+    - rvm: rbx-2.1.1
+    - rvm: rbx-2.0.0
+    - rvm: 1.8.7
+    - rvm: jruby-head
+    - rvm: jruby-18mode
