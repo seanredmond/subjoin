@@ -43,8 +43,8 @@ describe Subjoin::Link do
 
   describe "#to_s" do
     it "should return the href" do
-      expect(Subjoin::Link.new(JSON.parse(LINKS)["self"]).to_s).
-        to eq "http://example.com/posts"
+      @l = Subjoin::Link.new(JSON.parse(LINKS)["self"])
+      expect("#{@l}").to eq "http://example.com/posts"
     end
   end
 end
