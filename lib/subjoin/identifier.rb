@@ -1,8 +1,8 @@
 module Subjoin
   class Identifier
+    include Keyable
     def initialize(data)
-      @type = data['type']
-      @id = data['id']
+      load_key(data)
     end
   end
 end

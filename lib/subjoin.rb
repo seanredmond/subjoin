@@ -1,6 +1,8 @@
 require "faraday"
 require "json"
 require "subjoin/errors"
+require "subjoin/key"
+require "subjoin/keyable"
 require "subjoin/link"
 require "subjoin/links"
 require "subjoin/linkable"
