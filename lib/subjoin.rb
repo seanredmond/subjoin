@@ -5,6 +5,7 @@ require "subjoin/link"
 require "subjoin/links"
 require "subjoin/linkable"
 require "subjoin/resource"
+require "subjoin/identifier"
 require "subjoin/relationship"
 require "subjoin/version"
 
