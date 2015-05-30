@@ -3,10 +3,10 @@ module Subjoin
   class Link
     # The URL for this link
     # @return String
-    attr_accessor :href
+    attr_reader :href
 
-    # Metadata object for thi link
-    attr_accessor :meta
+    # Metadata object for this link
+    attr_reader :meta
     def initialize(data)
       if data.is_a? String
         @href = data
@@ -21,7 +21,7 @@ module Subjoin
       return ! @meta.nil?
     end
 
-    # Returns the #href attribute
+    # Returns the {#href} attribute
     def to_s
       @href
     end
