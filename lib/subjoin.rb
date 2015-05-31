@@ -11,6 +11,7 @@ require "subjoin/meta"
 require "subjoin/resource"
 require "subjoin/identifier"
 require "subjoin/relationship"
+require "subjoin/compound_document"
 require "subjoin/version"
 
 module Subjoin

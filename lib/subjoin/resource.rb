@@ -10,14 +10,18 @@ module Subjoin
         data = spec
       end
 
-      if data['data'].is_a?(Array)
+      if data.has_key?("data")
+        data = data["data"]
+      end
+
+      if data.is_a?(Array)
         raise UnexpectedTypeError.new
       end
 
-      load_key(data['data'])
-      load_attributes(data['data']['attributes'])
-      @links = load_objects(data['data']['links'], Link)
-      @relationships = load_objects(data['data']['relationships'], Relationship)
+      load_key(data)
+      load_attributes(data['attributes'])
+      @links = load_objects(data['links'], Link)
+      @relationships = load_objects(data['relationships'], Relationship)
     end
 
     def links(spec = nil)
