@@ -1,6 +1,7 @@
 module Subjoin
   class Resource
     include Keyable
+    include Attributable
 
     def initialize(spec)
       if spec.is_a?(URI)
@@ -14,7 +15,7 @@ module Subjoin
       end
 
       load_key(data['data'])
-      @attributes = data['data']['attributes']
+      load_attributes(data['data']['attributes'])
       @links = load_objects(data['data']['links'], Link)
       @relationships = load_objects(data['data']['relationships'], Relationship)
     end
@@ -22,14 +23,6 @@ module Subjoin
     def links(spec = nil)
       return @links if spec.nil?
       @links[spec]
-    end
-        
-    def method_missing name, *args
-      name = name.to_s
-      if args.empty? && @attributes.keys.include?(name)
-        return @attributes[name]
-      end
-      raise NoMethodError, "undefined method `#{name}' for #{self}"
     end
 
     private
