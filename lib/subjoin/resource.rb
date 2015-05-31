@@ -1,8 +1,11 @@
 module Subjoin
   class Resource
-    include Keyable
     include Attributable
+    include Keyable
+    include Linkable
 
+    attr_reader :relationships
+    
     def initialize(spec)
       if spec.is_a?(URI)
         data = Subjoin::get(spec)
@@ -20,20 +23,15 @@ module Subjoin
 
       load_key(data)
       load_attributes(data['attributes'])
-      @links = load_objects(data['links'], Link)
-      @relationships = load_objects(data['relationships'], Relationship)
-    end
-
-    def links(spec = nil)
-      return @links if spec.nil?
-      @links[spec]
+      load_links(data['links'])
+      @relationships = load_relationships(data['relationships'])
     end
 
     private
-    def load_objects(data, type)
+    def load_relationships(data)
       return {} if data.nil?
 
-      Hash[data.map{|k, v| [k, type.new(v)]}]
+      Hash[data.map{|k, v| [k, Relationship.new(v)]}]
     end
   end
 end

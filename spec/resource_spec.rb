@@ -71,18 +71,13 @@ describe Subjoin::Resource do
 
     context "with no parameter" do
       it "returns a Hash of all the links" do
-        expect(@article.links).to be_an_instance_of Hash
-      end
-
-      it "returns a Hash of Link objects" do
-        expect(@article.links.values.map{|v| v.class}.uniq).
-          to eq [Subjoin::Link]
+        expect(@article.links).to be_an_instance_of Subjoin::Links
       end
     end
 
     context "with a parameter" do
       it "returns a link object" do
-        expect(@article.links("self")).to be_an_instance_of Subjoin::Link
+        expect(@article.links["self"]).to be_an_instance_of Subjoin::Link
       end
     end
   end
