@@ -4,6 +4,8 @@ module Subjoin
     include Keyable
     include Linkable
 
+    # The relationships specified for the object
+    # @return [Hash<Relationship>]
     attr_reader :relationships
     
     def initialize(spec)
