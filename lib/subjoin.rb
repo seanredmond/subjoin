@@ -20,7 +20,17 @@ module Subjoin
 
   def self.resources(uri)
     data = self.get uri
-    return data
+
+    # If there is a data element and that data element is a Hash then we have a
+    # single object response
+    if data.has_key?("data") && data['data'].is_a?(Hash)
+      return Resource.new(data)
+    end
+
+    # Otherwise we have a compound document with many objects, or the response
+    # only contains mets, links, etc. which we can still treat as a compound
+    # document
+    return CompoundDocument.new(data)
   end
     
   def self.get(uri)
