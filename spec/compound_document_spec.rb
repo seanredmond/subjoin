@@ -15,7 +15,7 @@ describe Subjoin::CompoundDocument do
     end
 
     it "should have the right Resource objects" do
-      expect(@cd.resources.first.key).to eq Subjoin::Key.new("articles", "1")
+      expect(@cd.resources.first.identifier).to eq Subjoin::Identifier.new("articles", "1")
     end
   end
 
@@ -29,7 +29,7 @@ describe Subjoin::CompoundDocument do
     end
 
     it "should have the right Resource objects" do
-      expect(@cd.included.first.key).to eq Subjoin::Key.new("people", "9")
+      expect(@cd.included.first.identifier).to eq Subjoin::Identifier.new("people", "9")
     end
   end
 end

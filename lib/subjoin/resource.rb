@@ -1,12 +1,14 @@
 module Subjoin
   class Resource
     include Attributable
-    include Keyable
+    #include Keyable
     include Linkable
 
     # The relationships specified for the object
     # @return [Hash<Relationship>]
     attr_reader :relationships
+
+    attr_reader :identifier
     
     def initialize(spec)
       if spec.is_a?(URI)
@@ -23,10 +25,21 @@ module Subjoin
         raise UnexpectedTypeError.new
       end
 
-      load_key(data)
+      #load_key(data)
+
+      @identifier = Identifier.new(data['type'], data['id'])
+      
       load_attributes(data['attributes'])
       load_links(data['links'])
       @relationships = load_relationships(data['relationships'])
+    end
+
+    def type
+      @identifier.type
+    end
+
+    def id
+      @identifier.id
     end
 
     private

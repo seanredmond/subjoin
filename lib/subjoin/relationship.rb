@@ -13,8 +13,8 @@ module Subjoin
     private
     def load_linkages(data)
       return [] if data.nil?
-      return [Identifier.new(data)] if data.is_a? Hash
-      data.map{|l| Identifier.new(l)}
+      return [Identifier.new(data['type'], data['id'], data['meta'])] if data.is_a? Hash
+      data.map{|l| Identifier.new(l['type'], l['id'], l['meta'])}
     end
 
   end
