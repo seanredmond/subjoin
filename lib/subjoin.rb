@@ -15,9 +15,15 @@ require "subjoin/compound_document"
 require "subjoin/version"
 
 module Subjoin
-  # Your code goes here...
+
+  # Connection used for all HTTP resquests
   @@conn = Faraday.new
 
+  # Get a resource
+  # @param uri [String,URI] The endpoint to get
+  # @return [Resource,CompoundDocument] It the response contains a single
+  #   object a {Resource} will be returned, otherwise a {CompoundDocument}
+  # @raise [ResponseError] if the endpoint returns an error response
   def self.resources(uri)
     data = self.get uri
 
@@ -32,7 +38,12 @@ module Subjoin
     # document
     return CompoundDocument.new(data)
   end
-    
+
+  private
+  # Fetch and parse data from a URI
+  # @param [URI] uri The endpoint to get
+  # @returns [Hash] Parsed JSON data
+  # @raise [ResponseError] if the endpoint returns an error response
   def self.get(uri)
     response = @@conn.get(uri)
     data = JSON.parse response.body
