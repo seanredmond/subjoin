@@ -1,11 +1,13 @@
 module Subjoin
   class Relationship
     include Linkable
+    include Metable
 
     attr_reader :links, :linkages
     def initialize(data)
       @links = load_links(data['links'])
       @linkages = load_linkages(data['data'])
+      load_meta(data['meta'])
     end
 
     private

@@ -16,6 +16,10 @@ describe Subjoin::Relationship do
     expect(@auths.links.keys).to eq ["self", "related"]
   end
 
+  it "has a meta object" do
+    expect(@auths.meta).to be_an_instance_of Subjoin::Meta
+  end
+
   describe "#linkages" do
     context "with a single linkage" do
       it "returns an Array" do
