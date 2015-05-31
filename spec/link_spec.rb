@@ -24,8 +24,18 @@ describe Subjoin::Link do
       expect(@link.href).to eq "http://example.com/articles/1/comments"
     end
 
-    it "should have a meta attribute" do
-      expect(@link.meta).to be_an_instance_of Hash
+    context "when there is a meta attribute" do
+      it "should have a meta attribute" do
+        expect(@link.meta).to be_an_instance_of Subjoin::Meta
+      end
+    end
+
+    context "when there is no meta attribute" do
+      it "should not have a meta attribute" do
+        metaless = JSON.parse(LINKS)["related"]
+        metaless.delete("meta")
+        expect(Subjoin::Link.new(metaless).meta).to be_nil
+      end
     end
   end
 

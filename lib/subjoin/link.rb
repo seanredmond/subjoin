@@ -12,7 +12,7 @@ module Subjoin
         @href = data
       else
         @href = data['href']
-        @meta = data['meta']
+        @meta = data['meta'].nil? ? nil : Subjoin::Meta.new(data['meta'])
       end
     end
 
