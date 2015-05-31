@@ -1,5 +1,6 @@
 module Subjoin
-  # Meta object See {http://jsonapi.org/format/#document-meta}
+  # Meta object
+  # @see http://jsonapi.org/format/#document-meta
   class Meta
     include Attributable
     def initialize(data)

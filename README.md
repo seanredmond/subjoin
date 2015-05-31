@@ -1,6 +1,6 @@
 # Subjoin
 
-TODO: Write a gem description
+A practical wrapper for [JSON-API](http://jsonapi.org) interactions.
 
 ## Installation
 
@@ -17,6 +17,15 @@ And then execute:
 Or install it yourself as:
 
     $ gem install subjoin
+
+## Documentation
+
+For full documentation run
+
+    $ yardoc
+    $ yard server
+
+Then load http://localhost:8808 in your browser
 
 ## Usage
 
@@ -38,7 +47,7 @@ Get a single resource:
 
 ### Resources
 
-Given this JSON:
+A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single JSON-API object. Given this JSON:
 
 	{
 	  "data": {
@@ -123,8 +132,34 @@ and one with an ```href``` attribute and ```meta``` object:
     article.links["related"].has_meta?  # false
     article.links["related"].meta       # nil
 
-	
+### Meta Information
 
+[Meta information](http://jsonapi.org/format/#document-meta) is represented by
+```Subjoin::Meta``` objects. Any object that might have meta information will
+have a ```#meta``` attribute. ```Meta``` object attributes are accessible by
+name like other attributes.
+
+Given this JSON:
+
+    {
+	  "meta": {
+		"copyright": "Copyright 2015 Example Corp.",
+		"authors": [
+		  "Yehuda Katz",
+		  "Steve Klabnik",
+		  "Dan Gebhardt",
+		  "Tyler Kellen"
+		]
+	  },
+	  "data": {
+		// ...
+	  }
+	}
+
+The data might be accessed in this way:
+
+    article.meta           # Meta object
+    article.meta.copyright # "Copyright 2015 Example Corp."
 
 	
 
