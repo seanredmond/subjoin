@@ -99,6 +99,23 @@ Attributes are accessible directly through the object or through the
     article.title               # Both return 
     article.attributes["title"] # "JSON API paints my bikeshed!"
 
+### Resource Identifiers
+
+[Resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects)
+occur in Relationship objects as pointers to other resources by ```type``` and
+```id``` (they may have, optionally, a ```meta``` attribute as well). Subjoin
+also constructs an Identifier object out of the ```type``` and ```id```
+attributes of a Resource (always without the ```meta```).
+
+    article.identifier      # Identifier.object
+    article.identifier.type # "articles"
+	article.identifier.id   # "1"
+    article.type            # "articles", from the Identifier object
+	article.id              # "1" from the Identifier object
+
+Two Identifier objects are considered to be equal (==) if both their `type` and
+`id` match. The ```meta``` attribute is ignored in tests for equality.
+
 ### Links
 
 ```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
