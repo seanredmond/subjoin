@@ -20,5 +20,11 @@ module Subjoin
     def to_s
       @href.to_s
     end
+
+    # Get the resource identified by the URL
+    # @return [Document]
+    def get
+      Document.new(@href)
+    end
   end
 end
