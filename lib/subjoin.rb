@@ -31,7 +31,7 @@ module Subjoin
   private
   # Fetch and parse data from a URI
   # @param [URI] uri The endpoint to get
-  # @returns [Hash] Parsed JSON data
+  # @return [Hash] Parsed JSON data
   # @raise [ResponseError] if the endpoint returns an error response
   def self.get(uri)
     response = @@conn.get(uri)

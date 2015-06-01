@@ -115,7 +115,7 @@ accessing the data.
 	article.relationships["author"].type # "people"
 
 Attributes are accessible directly through the object or through the
-```attributes Hash
+```attributes``` Hash
 
     article.title               # Both return 
     article.attributes["title"] # "JSON API paints my bikeshed!"
