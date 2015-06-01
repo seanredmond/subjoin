@@ -7,7 +7,7 @@ describe Subjoin::Link do
     end
 
     it "should have an href attribute" do
-      expect(@link.href).to eq "http://example.com/posts"
+      expect(@link.href.to_s).to eq "http://example.com/posts"
     end
 
     it "should have a nil meta attribute" do
@@ -21,7 +21,7 @@ describe Subjoin::Link do
     end
 
     it "should have an href attribute" do
-      expect(@link.href).to eq "http://example.com/articles/1/comments"
+      expect(@link.href.to_s).to eq "http://example.com/articles/1/comments"
     end
 
     context "when there is a meta attribute" do

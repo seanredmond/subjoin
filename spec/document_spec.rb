@@ -110,7 +110,7 @@ describe Subjoin::Document do
       end
 
       it "has an expected link" do
-        expect(@doc.links["related"].href).to eq "http://jsonapi.org"
+        expect(@doc.links["related"].to_s).to eq "http://jsonapi.org"
       end
     end
 
