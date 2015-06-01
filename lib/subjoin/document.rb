@@ -15,7 +15,7 @@ module Subjoin
 
     def initialize(spec)
       if spec.is_a?(URI)
-        contents = get(spec)
+        contents = Subjoin::get(spec)
       elsif spec.is_a?(Hash)
         contents = spec
       end

@@ -198,4 +198,13 @@ describe Subjoin::Document do
       end
     end
   end
+
+  context "instantiated with a URI" do
+    it "succeeds" do
+      allow_any_instance_of(Faraday::Connection).
+        to receive(:get).and_return(double(Faraday::Response, :body => ARTICLE))
+      expect(Subjoin::Document.new(URI("http://example.com/articles"))).
+        to be_an_instance_of(Subjoin::Document)
+    end
+  end
 end

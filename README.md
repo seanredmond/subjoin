@@ -29,11 +29,10 @@ Then load http://localhost:8808 in your browser
 
 ## Usage
 
-The simplest starting point is to pass a URL (as a URI object) to
-```Subjoin::document``` which will return a ```Subjoin::Document``` or raise an
-error based on the response received.
+The simplest starting point to create a ```Subjoin::Document``` with a URI:
 
-    doc = Subjoin::document(URI("http://example.com/articles"))
+    require "subjoin"
+    doc = Subjoin::Document.new(URI("http://example.com/articles"))
 
 ```Subjoin::document``` does not distinguish between simple and compound
 documents. Rather, the returned ```Subjoin::Document``` may have ```data```,
@@ -44,7 +43,7 @@ the response.
 
 You can access all the expected members of the [top-level document](http://jsonapi.org/format/#document-top-level):
 
-    doc = Subjoin::document(URI("http://example.com/articles"))
+    doc = Subjoin::Document.new(URI("http://example.com/articles"))
 	doc.data     # Array of Resource objects
 	doc.links    # Links object
 	doc.included # Array of included Resource objects
@@ -104,7 +103,7 @@ A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single J
 The equivalent ```Subjoin::Resource``` object has a number of methods for
 accessing the data.
 
-    doc = Subjoin::document(URI("http://example.com/articles/1"))
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1"))
 	article = doc.data.first             # the Resource
     article.type                         # "articles"
     article.id                           # "1"
