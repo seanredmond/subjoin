@@ -6,6 +6,6 @@ describe "Subjoin::Meta" do
   end
 
   it "has dynamic attributes" do
-    expect(@m.copyright).to eq "Copyright 2015 Example Corp."
+    expect(@m["copyright"]).to eq "Copyright 2015 Example Corp."
   end
 end

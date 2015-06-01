@@ -60,7 +60,7 @@ describe Subjoin::Resource do
     end
 
     it "should have automatic attributes" do
-      expect(@article.title).to eq "JSON API paints my bikeshed!"
+      expect(@article["title"]).to eq "JSON API paints my bikeshed!"
     end
   end
 

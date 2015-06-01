@@ -113,10 +113,10 @@ accessing the data.
     article.relationships.keys           # ["author", "comments"]
 	article.relationships["author"].type # "people"
 
-Attributes are accessible directly through the object or through the
+Attributes are accessible directly through like Hash keys or through the
 ```attributes``` Hash
 
-    article.title               # Both return 
+    article["title"]               # Both return 
     article.attributes["title"] # "JSON API paints my bikeshed!"
 
 ### Resource Identifiers

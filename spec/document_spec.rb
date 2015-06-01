@@ -35,7 +35,7 @@ describe Subjoin::Document do
       end
 
       it "contains an expected Resource" do
-        expect(@doc.data.first.title).to eq "JSON API paints my bikeshed!"
+        expect(@doc.data.first["title"]).to eq "JSON API paints my bikeshed!"
       end
     end
 
@@ -142,7 +142,7 @@ describe Subjoin::Document do
       end
 
       it "has an expected attribute" do
-        expect(@doc.meta.category).to eq "Example response"
+        expect(@doc.meta["category"]).to eq "Example response"
       end
     end
 
