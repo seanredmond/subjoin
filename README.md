@@ -169,6 +169,11 @@ and one with an ```href``` attribute and ```meta``` object:
     article.links["related"].has_meta?  # false
     article.links["related"].meta       # nil
 
+If you have a ```Link``` you can get a new ```Document```
+
+    article.links["related"].get # Same thing as Subjoin::Document.new
+                                 # with the URL
+
 ### Meta Information
 
 [Meta information](http://jsonapi.org/format/#document-meta) is represented by
