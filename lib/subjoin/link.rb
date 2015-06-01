@@ -9,9 +9,9 @@ module Subjoin
 
     def initialize(data)
       if data.is_a? String
-        @href = data
+        @href = URI(data)
       else
-        @href = data['href']
+        @href = URI(data['href'])
         load_meta(data['meta'])
       end
     end
