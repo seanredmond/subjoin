@@ -18,7 +18,7 @@ module Subjoin
 
     # Returns the {#href} attribute
     def to_s
-      @href
+      @href.to_s
     end
   end
 end
