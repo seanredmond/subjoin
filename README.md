@@ -29,21 +29,41 @@ Then load http://localhost:8808 in your browser
 
 ## Usage
 
-The simplest starting point is to pass a URL (as a string or URI object) to ```Subjoin::resources``` which will return a ```Subjoin::Resource```, a ```Subjoin::CompoundDocument``` or raise an error based on the response received.
+The simplest starting point is to pass a URL (as a URI object) to
+```Subjoin::document``` which will return a ```Subjoin::Document``` or raise an
+error based on the response received.
 
-Get a compound document:
+    doc = Subjoin::document(URI("http://example.com/articles"))
 
-    @doc = Subjoin::resource(URI("http://example.com/articles"))
-    @doc.resources.first.type  # "articles"
-    @doc.resources.first.id    # "1"
-    @doc.resources.first.title # "JSON API paints my bikeshed!"
+```Subjoin::document``` does not distinguish between simple and compound
+documents. Rather, the returned ```Subjoin::Document``` may have ```data```,
+```included```, ```links```, ```meta``` and/or ```jsonapi``` members based on
+the response.
 
-Get a single resource:
+### Document
 
-    @doc = Subjoin::resource(URI("http://example.com/articles/1"))
-    @doc.type  # "articles"
-    @doc.id    # "1"
-    @doc.title # "JSON API paints my bikeshed!"
+You can access all the expected members of the [top-level document](http://jsonapi.org/format/#document-top-level):
+
+    doc = Subjoin::document(URI("http://example.com/articles"))
+	doc.data     # Array of Resource objects
+	doc.links    # Links object
+	doc.included # Array of included Resource objects
+	doc.meta     # Meta object
+	doc.jsonapi  # JsonApi object
+
+```#data``` will always return an Array (or nil). If the document's ```data```
+member is an object because the document contains only one resource it will
+still be constructed as an ```Array``` (with one member) in the ```Document```
+object.
+
+There are, in addition, methods to test whether any of the above members are
+present:
+
+    doc.has_data?
+	doc.has_links?
+	doc.has_included?
+	doc.has_meta?
+	doc.has_jsonapi?
 
 ### Resources
 
@@ -84,7 +104,8 @@ A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single J
 The equivalent ```Subjoin::Resource``` object has a number of methods for
 accessing the data.
 
-    article = Subjoin::resource(URI("http://example.com/articles/1"))
+    doc = Subjoin::document(URI("http://example.com/articles/1"))
+	article = doc.data.first             # the Resource
     article.type                         # "articles"
     article.id                           # "1"
 	article.links                        # A Subjoin::Links object
@@ -178,7 +199,9 @@ The data might be accessed in this way:
     article.meta           # Meta object
     article.meta.copyright # "Copyright 2015 Example Corp."
 
-	
+## Why is it called "Subjoin"
+
+Nice word. Sounds coder-y. Has most of the letters of "Ruby JSON-API".
 
 ## Contributing
 

@@ -57,5 +57,14 @@
     "links": {
       "self": "http://example.com/comments/12"
     }
-  }]
+  }],
+  "links": {
+    "related": "http://jsonapi.org"
+  },
+  "meta": {
+    "category": "Example response"
+  },
+  "jsonapi": {
+    "version": "1.0"
+  }
 }

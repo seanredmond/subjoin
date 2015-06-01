@@ -12,5 +12,9 @@ module Subjoin
         @links = Links.new(data)
       end
     end
+
+    def has_links?
+      return ! @links.nil?
+    end
   end
 end
