@@ -51,10 +51,10 @@ You can access all the expected members of the [top-level document](http://jsona
 	doc.meta     # Meta object
 	doc.jsonapi  # JsonApi object
 
-```#data``` will always return an Array (or nil). If the document's ```data```
-member is an object because the document contains only one resource it will
-still be constructed as an ```Array``` (with one member) in the ```Document```
-object.
+The ```#data``` attribute will always be an Array (or nil). If the document's
+```data``` member is an object because the document contains only one resource
+it will still be constructed as an ```Array``` (with one member) in the
+```Document``` object.
 
 There are, in addition, methods to test whether any of the above members are
 present:
