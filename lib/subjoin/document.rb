@@ -24,7 +24,9 @@ module Subjoin
       load_links(contents['links'])
 
       if contents.has_key? "included"
-        @included = contents['included'].map{|o| Resource.new(o)}
+        @included = Inclusions.new(
+          contents['included'].map{|o| Resource.new(o)}
+        )
       else
         @included = nil
       end
