@@ -110,8 +110,6 @@ accessing the data.
 	article.links                        # A Subjoin::Links object
 	article.links["self"].href           # "http://example.com/articles/1"
     article.relationships                # A Hash of Subjoin::Relationship objects
-    article.relationships.keys           # ["author", "comments"]
-	article.relationships["author"].type # "people"
 
 Attributes are accessible directly through like Hash keys or through the
 ```attributes``` Hash
@@ -135,6 +133,28 @@ attributes of a Resource (always without the ```meta```).
 
 Two Identifier objects are considered to be equal (==) if both their `type` and
 `id` match. The ```meta``` attribute is ignored in tests for equality.
+
+### Relationships
+
+Resources may have [relationsips](http://jsonapi.org/format/#document-resource-object-relationships) to other resources.
+
+
+    article.relationships                    # A Hash of
+                                             # Subjoin::Relationship objects
+    article.relationships.keys               # ["author", "comments"]
+	article.relationships["author"]          # Subjoin::Links object
+	article.relationships["author"].links    # Array of Subjoin::Link objects
+	article.relationships["author"].type     # "people"
+	article.relationships["author"].linkages # Array of Identifiers
+
+The related resources can be loaded from their links:
+
+    article.relationships["author"].links.links["self"].get
+
+Or, in a compound document, the ```Identifiers``` in the ```linkages``` array can be used to look up included resources:
+
+	identifier = article.relationships.linkages.first
+    document.included[identifier] # Returns the related resource
 
 ### Links
 
