@@ -2,10 +2,9 @@ require "spec_helper"
 
 
 describe Subjoin::Relationship do
-  before :each do
-    @auths = Subjoin::Relationship.new(
-      JSON.parse(ARTICLE)['data']['relationships']['author']
-    )
+  before :all do
+    @doc = Subjoin::Document.new(JSON.parse(COMPOUND))
+    @auths = @doc.data.first.relationships["author"]
   end
 
   it "is linkable" do
