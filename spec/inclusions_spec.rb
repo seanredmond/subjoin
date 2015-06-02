@@ -11,6 +11,12 @@ describe Subjoin::Inclusions do
     end
   end
 
+  describe "#first" do
+    it "returns a Resource" do
+      expect(@doc.included.first).to be_an_instance_of Subjoin::Resource
+    end
+  end
+
   describe "#[]" do
     context "when passed an Identifier" do
       context "when the Identifier matches something included" do
@@ -39,9 +45,22 @@ describe Subjoin::Inclusions do
       end
     end
 
+    context "when passed a Fixnum" do
+      context "when the Identifier matches something included" do
+        it "returns a Resource" do
+          expect(@doc.included[0]).
+            to be_an_instance_of Subjoin::Resource
+        end
+
+        it "returns to expected Resource" do
+          expect(@doc.included[["people", "9"]]['twitter']).to eq "dgeb"
+        end
+      end
+    end
+      
     context "when nothing matched" do
       it "returns nil" do
-        expect(@doc.included[["people", "99"]]).
+        expect(@doc.included[9]).
           to be_nil
       end
     end

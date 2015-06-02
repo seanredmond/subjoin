@@ -46,7 +46,7 @@ You can access all the expected members of the [top-level document](http://jsona
     doc = Subjoin::Document.new(URI("http://example.com/articles"))
 	doc.data     # Array of Resource objects
 	doc.links    # Links object
-	doc.included # Array of included Resource objects
+	doc.included # Inclusions object
 	doc.meta     # Meta object
 	doc.jsonapi  # JsonApi object
 
@@ -173,6 +173,30 @@ If you have a ```Link``` you can get a new ```Document```
 
     article.links["related"].get # Same thing as Subjoin::Document.new
                                  # with the URL
+
+### Included Resources
+
+Included resources are gathered into a ```Subjoin::Inclusions``` object, and can be accessed in several ways. In the jsonapi.org [compund document example](http://jsonapi.org/format/#document-compound-documents), the ```article``` has a ```relationship``` to an ```author``` with the type and id (```linkage```) of "person" and "9". In a Subjoin ```Document```, the included ```Resource``` can be fetched via the ```Identifer``` from the ```linkages``` of a
+```Relationship```:
+
+    doc = Subjoin::Document.new(""http://example.com/articles/1")
+	article = doc.data.first
+	authrel = article.relationships["author"].linkages.first # Identifier
+	auth = doc.included[authrel]                             # Resource 
+
+By an array containing a type and an id:
+
+    auth = doc.included[["people", "9"]]
+
+By index
+
+    auth = doc.included[0]
+
+All these methods return ```nil``` if there is so matching
+resource. There also a couple of convenience methods:
+
+    doc.included.all   # Get the full array of included resources
+    doc.included.first # Get the first included resource
 
 ### Meta Information
 

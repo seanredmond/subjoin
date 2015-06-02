@@ -74,11 +74,11 @@ describe Subjoin::Document do
   describe "#included" do
     context "when there are included resources" do
       it "is an Array" do
-        expect(@doc.included).to be_an_instance_of Array
+        expect(@doc.included).to be_an_instance_of Subjoin::Inclusions
       end
 
       it "contains an expected Resource" do
-        expect(@doc.included.first.type).to eq "people"
+        expect(@doc.included[0].type).to eq "people"
       end
     end
 
