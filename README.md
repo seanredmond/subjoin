@@ -196,8 +196,13 @@ If you have a ```Link``` you can get a new ```Document```
 
 ### Included Resources
 
-Included resources are gathered into a ```Subjoin::Inclusions``` object, and can be accessed in several ways. In the jsonapi.org [compund document example](http://jsonapi.org/format/#document-compound-documents), the ```article``` has a ```relationship``` to an ```author``` with the type and id (```linkage```) of "person" and "9". In a Subjoin ```Document```, the included ```Resource``` can be fetched via the ```Identifer``` from the ```linkages``` of a
-```Relationship```:
+Included resources are gathered into a ```Subjoin::Inclusions```
+object, and can be accessed in several ways. In the jsonapi.org
+[compund document example](http://jsonapi.org/format/#document-compound-documents),
+the ```article``` has a ```relationship``` to an ```author``` with the
+type and id (```linkage```) of "person" and "9". In a Subjoin
+```Document```, the included ```Resource``` can be fetched via the
+```Identifer``` from the ```linkages``` of a ```Relationship```:
 
     doc = Subjoin::Document.new(""http://example.com/articles/1")
 	article = doc.data.first
