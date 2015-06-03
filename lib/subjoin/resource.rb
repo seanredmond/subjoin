@@ -10,7 +10,8 @@ module Subjoin
 
     attr_reader :identifier
     
-    def initialize(spec)
+    def initialize(spec, doc = nil)
+      @document = doc
       if spec.is_a?(URI)
         data = Subjoin::get(spec)
       elsif spec.is_a?(Hash)
@@ -31,7 +32,7 @@ module Subjoin
       
       load_attributes(data['attributes'])
       load_links(data['links'])
-      @relationships = load_relationships(data['relationships'])
+      @relationships = load_relationships(data['relationships'], @document)
     end
 
     def type
@@ -43,10 +44,10 @@ module Subjoin
     end
 
     private
-    def load_relationships(data)
+    def load_relationships(data, doc)
       return {} if data.nil?
 
-      Hash[data.map{|k, v| [k, Relationship.new(v)]}]
+      Hash[data.map{|k, v| [k, Relationship.new(v, doc)]}]
     end
   end
 end

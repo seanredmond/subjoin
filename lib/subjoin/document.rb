@@ -25,7 +25,7 @@ module Subjoin
 
       if contents.has_key? "included"
         @included = Inclusions.new(
-          contents['included'].map{|o| Resource.new(o)}
+          contents['included'].map{|o| Resource.new(o, self)}
         )
       else
         @included = nil
@@ -33,9 +33,9 @@ module Subjoin
       
       if contents.has_key?("data")
         if contents["data"].is_a? Hash
-          @data = [Resource.new(contents["data"])]
+          @data = [Resource.new(contents["data"], self)]
         else
-          @data = contents["data"].map{|d| Resource.new(d)}
+          @data = contents["data"].map{|d| Resource.new(d, self)}
         end
       else
         @data = nil

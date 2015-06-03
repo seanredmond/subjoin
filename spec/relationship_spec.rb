@@ -19,6 +19,12 @@ describe Subjoin::Relationship do
     expect(@auths.meta).to be_an_instance_of Subjoin::Meta
   end
 
+  describe "#lookup" do
+    it "returns an Array of resources" do
+      expect(@auths.lookup.map{|o| o.class}.uniq).to eq [Subjoin::Resource]
+    end
+  end
+
   describe "#linkages" do
     context "with a single linkage" do
       it "returns an Array" do
@@ -37,7 +43,8 @@ describe Subjoin::Relationship do
     context "with an array of linkages" do
       before :each do
         @comments = Subjoin::Relationship.new(
-          JSON.parse(ARTICLE)['data']['relationships']['comments']
+          JSON.parse(ARTICLE)['data']['relationships']['comments'],
+          nil
         )
       end      
 
