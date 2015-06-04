@@ -13,11 +13,19 @@ module Subjoin
     # JSON-API version information
     attr_reader :jsonapi
 
-    def initialize(spec)
-      if spec.is_a?(URI)
-        contents = Subjoin::get(spec)
-      elsif spec.is_a?(Hash)
-        contents = spec
+    def initialize(*args)
+      if args.count == 1
+        spec = args[0]
+        if spec.is_a?(URI)
+          contents = Subjoin::get(spec)
+        elsif spec.is_a?(Hash)
+          contents = spec
+        end
+      elsif args.count == 2
+        if args[0].is_a?(String) and args[1].is_a?(String)
+        end
+      else
+        raise ArgumentError
       end
 
       load_meta(contents['meta'])
