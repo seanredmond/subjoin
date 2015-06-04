@@ -32,30 +32,8 @@ describe Subjoin::DerivableResource do
   end
   
   describe "#type_url" do
-    context "with a non-subclassed object" do
-      it "throws an error" do
-        expect { @unsub.type_url }.to raise_exception NoMethodError
-      end
-    end
-    
-    context "with and subclassed object" do
-      context "when the developer forgot to override ROOT_URI" do
-        it "throws an error" do
-          expect { @poor.type_url }.to raise_exception Subjoin::SubclassError
-        end
-      end
-      
-      context "with automatic type path" do
-        it "returns the URI" do
-          expect(@sub.type_url).to eq "http://example.com/exampleresource"
-        end
-      end
-      
-      context "with non-standard type path" do
-        it "returns the URI" do
-          expect(@nonstd.type_url).to eq "http://example.com/nonstandard"
-        end
-      end
+    it "is a class method" do
+      expect(Subjoin::ExampleResource::type_url).to eq "http://example.com/exampleresource"
     end
   end
 end
