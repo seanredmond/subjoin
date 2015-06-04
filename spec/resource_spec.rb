@@ -89,6 +89,7 @@ describe Subjoin::Resource do
       @sub    = ExampleResource.new(URI("http://example.com/articles/1"))
       @nonstd = NonStandardUri.new(URI("http://example.com/articles/1"))
       @unsub  = Subjoin::Resource.new(URI("http://example.com/articles/1"))
+      @poor   = PoorlySubclassed.new(URI("http://example.com/articles/1"))
     end
 
     it "has a root uri" do
@@ -102,11 +103,17 @@ describe Subjoin::Resource do
     describe "#type_url" do
       context "with a non-subclassed object" do
         it "throws an error" do
-          expect { @unsub.type_url }.to raise_exception SyntaxError
+          expect { @unsub.type_url }.to raise_exception Subjoin::SubclassError
         end
       end
 
       context "with and subclassed object" do
+        context "when the developer forgot to override ROOT_URI" do
+          it "throws an error" do
+            expect { @poor.type_url }.to raise_exception Subjoin::SubclassError
+          end
+        end
+            
         context "with automatic type path" do
           it "returns the URI" do
             expect(@sub.type_url).to eq "http://example.com/exampleresource"

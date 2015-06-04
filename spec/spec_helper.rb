@@ -16,3 +16,6 @@ end
 class NonStandardUri < ExampleResource
   TYPE_PATH="nonstandard"
 end
+
+class PoorlySubclassed < Subjoin::Resource
+end

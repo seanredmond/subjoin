@@ -10,4 +10,6 @@ module Subjoin
   class ResponseError < Error; end
 
   class UnexpectedTypeError < Error; end
+
+  class SubclassError < Error; end
 end

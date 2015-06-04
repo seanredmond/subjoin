@@ -49,11 +49,11 @@ module Subjoin
 
     def type_url
       if self.class == Resource
-        raise SyntaxError
+        raise Subjoin::SubclassError.new "Class must be a subclass of Resource to use this method"
       end
 
-      if self.class::ROOT_URI.empty?
-        raise SyntaxError 
+      if self.class::ROOT_URI.nil?
+        raise Subjoin::SubclassError.new "#{self.class} or a parent of #{self.class} derived from Subjoin::Resource must override ROOT_URI to use this method"
       end
 
       if self::class::TYPE_PATH.nil?
