@@ -1,5 +1,9 @@
 module Subjoin
   class Resource
+
+    ROOT_URI = nil
+    TYPE_PATH = nil
+    
     include Attributable
     #include Keyable
     include Linkable
@@ -43,6 +47,24 @@ module Subjoin
       @identifier.id
     end
 
+    def type_url
+      if self.class == Resource
+        raise SyntaxError
+      end
+
+      if self.class::ROOT_URI.empty?
+        raise SyntaxError 
+      end
+
+      if self::class::TYPE_PATH.nil?
+        type_segment = self.class.to_s.downcase
+      else
+        type_segment = self::class::TYPE_PATH
+      end
+
+      return [self::class::ROOT_URI, type_segment].join('/')
+    end
+    
     private
     def load_relationships(data, doc)
       return {} if data.nil?
