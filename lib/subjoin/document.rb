@@ -20,10 +20,12 @@ module Subjoin
           contents = Subjoin::get(spec)
         elsif spec.is_a?(Hash)
           contents = spec
+        elsif spec.is_a?(String)
+          contents = Subjoin::get(mapped_type(spec))
         end
       elsif args.count == 2
-        if args[0].is_a?(String) and args[1].is_a?(String)
-        end
+        type, id = args
+        contents = Subjoin::get(URI([mapped_type(type), id].join('/')))
       else
         raise ArgumentError
       end
@@ -69,6 +71,26 @@ module Subjoin
     # @return [Boolean] true if there is version information
     def has_jsonapi?
       return ! @jsonapi.nil?
+    end
+
+    private
+    def mapped_type(t)
+      d_type = type_map.fetch(t, nil)
+      if d_type.nil?
+        throw ArgumentError
+      end
+      return d_type::type_url
+    end
+      
+    def type_map
+      @type_map ||= create_type_map
+    end
+    
+    def create_type_map
+      d_types = Subjoin.constants.
+                map{|c| Subjoin.const_get(c)}.
+                select{|c| c.is_a?(Class) and c < Subjoin::DerivableResource}
+      Hash[d_types.map{|c| [c::type_id, c]}]
     end
   end
 end

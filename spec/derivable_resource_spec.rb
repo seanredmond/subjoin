@@ -11,6 +11,10 @@ module Subjoin
 
   class PoorlySubclassed < Subjoin::DerivableResource
   end
+
+  class ExampleArticle < ExampleResource
+    TYPE_PATH="articles"
+  end
 end
 
 describe Subjoin::DerivableResource do
@@ -21,6 +25,7 @@ describe Subjoin::DerivableResource do
     @nonstd = Subjoin::NonStandardUri.new(URI("http://example.com/articles/1"))
     @unsub  = Subjoin::Resource.new(URI("http://example.com/articles/1"))
     @poor   = Subjoin::PoorlySubclassed.new(URI("http://example.com/articles/1"))
+    Subjoin::Document.new({})
   end
   
   it "has a root uri" do
@@ -33,7 +38,31 @@ describe Subjoin::DerivableResource do
   
   describe "#type_url" do
     it "is a class method" do
-      expect(Subjoin::ExampleResource::type_url).to eq "http://example.com/exampleresource"
+      expect(Subjoin::ExampleResource::type_url).to eq URI("http://example.com/exampleresource")
     end
   end
 end
+
+describe Subjoin::Document do
+  describe "#new" do
+    context "with a single string parameter" do
+      it "maps derived types" do
+        expect_any_instance_of(Faraday::Connection)
+          .to receive(:get).with(URI("http://example.com/articles"))
+               .and_return(double(Faraday::Response, :body => ARTICLE))
+        Subjoin::Document.new("articles")
+      end
+    end
+
+    context "with two string parameters" do
+      it "maps derived types with the second string as an id" do
+        expect_any_instance_of(Faraday::Connection)
+          .to receive(:get).with(URI("http://example.com/articles/2"))
+               .and_return(double(Faraday::Response, :body => ARTICLE))
+        Subjoin::Document.new("articles", "2")
+      end
+    end
+  end
+end
+      
+  
