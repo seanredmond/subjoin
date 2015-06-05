@@ -31,7 +31,8 @@ module Subjoin
       if args.count == 1
         spec = args[0]
         if spec.is_a?(URI)
-          contents = Subjoin::get(spec)
+          params = args[1].is_a?(Hash) ? args[1] : {}
+          contents = Subjoin::get(spec, params)
         elsif spec.is_a?(Hash)
           contents = spec
         elsif spec.is_a?(String)

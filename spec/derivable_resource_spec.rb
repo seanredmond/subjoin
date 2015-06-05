@@ -48,7 +48,7 @@ describe Subjoin::Document do
     context "with a single string parameter" do
       it "maps derived types" do
         expect_any_instance_of(Faraday::Connection)
-          .to receive(:get).with(URI("http://example.com/articles"))
+          .to receive(:get).with(URI("http://example.com/articles"), {})
                .and_return(double(Faraday::Response, :body => ARTICLE))
         Subjoin::Document.new("articles")
       end
@@ -57,7 +57,7 @@ describe Subjoin::Document do
     context "with two string parameters" do
       it "maps derived types with the second string as an id" do
         expect_any_instance_of(Faraday::Connection)
-          .to receive(:get).with(URI("http://example.com/articles/2"))
+          .to receive(:get).with(URI("http://example.com/articles/2"), {})
                .and_return(double(Faraday::Response, :body => ARTICLE))
         Subjoin::Document.new("articles", "2")
       end

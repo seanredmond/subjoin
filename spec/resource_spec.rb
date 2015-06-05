@@ -20,7 +20,7 @@ describe Subjoin::Resource do
       context "passing a URI as a parameter" do
         it "should get the same a parameter" do
           expect_any_instance_of(Faraday::Connection)
-            .to receive(:get).with(URI("http://example.com/articles/2"))
+            .to receive(:get).with(URI("http://example.com/articles/2"), {})
                  .and_return(double(Faraday::Response, :body => ARTICLE))
 
           @articles = Subjoin::Resource.
