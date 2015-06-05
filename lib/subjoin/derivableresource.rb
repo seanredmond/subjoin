@@ -19,7 +19,7 @@ module Subjoin
       end
 
 
-      return [self::ROOT_URI, self::type_id].join('/')
+      return URI([self::ROOT_URI, self::type_id].join('/'))
     end
   end
 end
