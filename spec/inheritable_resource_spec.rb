@@ -1,7 +1,7 @@
 require "spec_helper"
 
 module Subjoin
-  class ExampleResource < Subjoin::DerivableResource
+  class ExampleResource < Subjoin::InheritableResource
     ROOT_URI="http://example.com"
   end
 
@@ -9,7 +9,7 @@ module Subjoin
     TYPE_PATH="nonstandard"
   end
 
-  class PoorlySubclassed < Subjoin::DerivableResource
+  class PoorlySubclassed < Subjoin::InheritableResource
   end
 
   class ExampleArticle < ExampleResource
@@ -17,7 +17,7 @@ module Subjoin
   end
 end
 
-describe Subjoin::DerivableResource do
+describe Subjoin::InheritableResource do
   before :each do
     allow_any_instance_of(Faraday::Connection).
       to receive(:get).and_return(double(Faraday::Response, :body => ARTICLE))

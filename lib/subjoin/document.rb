@@ -104,7 +104,7 @@ module Subjoin
     def create_type_map
       d_types = Subjoin.constants.
                 map{|c| Subjoin.const_get(c)}.
-                select{|c| c.is_a?(Class) and c < Subjoin::DerivableResource}
+                select{|c| c.is_a?(Class) and c < Subjoin::InheritableResource}
       Hash[d_types.map{|c| [c::type_id, c]}]
     end
   end

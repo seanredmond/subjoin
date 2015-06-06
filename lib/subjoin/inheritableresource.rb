@@ -1,5 +1,5 @@
 module Subjoin
-  class DerivableResource < Resource
+  class InheritableResource < Resource
     ROOT_URI = nil
     TYPE_PATH = nil
 
