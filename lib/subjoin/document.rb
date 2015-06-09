@@ -28,19 +28,21 @@ module Subjoin
     #    the URL
     # @param [Array] args
     def initialize(*args)
-      if args.count == 1
-        spec = args[0]
-        if spec.is_a?(URI)
-          params = args[1].is_a?(Hash) ? args[1] : {}
-          contents = Subjoin::get(spec, params)
-        elsif spec.is_a?(Hash)
-          contents = spec
-        elsif spec.is_a?(String)
-          contents = Subjoin::get(mapped_type(spec))
-        end
-      elsif args.count == 2
+      if args.count < 1
+        raise ArgumentError.new
+      end
+
+      if args[0].is_a?(URI)
+        contents = Subjoin::get(args[0], args[1])
+      elsif args[0].is_a?(Hash)
+          contents = args[0]
+      elsif args[0].is_a?(String)
         type, id = args
-        contents = Subjoin::get(URI([mapped_type(type), id].join('/')))
+        if id.nil?
+          contents = Subjoin::get(mapped_type(args[0]))
+        else
+          contents = Subjoin::get(URI([mapped_type(type), id].join('/')))
+        end
       else
         raise ArgumentError
       end
