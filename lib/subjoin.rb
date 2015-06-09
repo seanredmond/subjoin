@@ -38,6 +38,7 @@ module Subjoin
   # @return [Hash] Parsed JSON data
   # @raise [ResponseError] if the endpoint returns an error response
   def self.get(uri, params={})
+    params = {} if params.nil?
     uri_params = uri.query.nil? ? {} : param_flatten(CGI::parse(uri.query))
     final_params = uri_params.merge(params)
     response = @@conn.get(uri, final_params)
@@ -52,7 +53,7 @@ module Subjoin
 
   # CGI::parse creates a hash whose values are arrays which is
   # incompatible with Faraday.get, so flatten the values
-  def param_flatten(p)
+  def self.param_flatten(p)
     Hash[p.map{|k,v| [k, v.join(',')]}]
   end
 end
