@@ -32,20 +32,7 @@ module Subjoin
         raise ArgumentError.new
       end
 
-      if args[0].is_a?(URI)
-        contents = Subjoin::get(args[0], args[1])
-      elsif args[0].is_a?(Hash)
-          contents = args[0]
-      elsif args[0].is_a?(String)
-        type, id = args
-        if id.nil?
-          contents = Subjoin::get(mapped_type(args[0]))
-        else
-          contents = Subjoin::get(URI([mapped_type(type), id].join('/')))
-        end
-      else
-        raise ArgumentError
-      end
+      contents = load_by_type(args[0], args[1..-1])
 
       load_meta(contents['meta'])
       load_links(contents['links'])
@@ -71,6 +58,30 @@ module Subjoin
 
     private
 
+    def load_by_type(firstArg, restArgs)
+      # We were passed a URI. Load it
+      return Subjoin::get(firstArg, restArgs[0]) if firstArg.is_a?(URI)
+
+      # We were passed a Hash. Just use it
+      return firstArg if firstArg.is_a?(Hash)
+
+      # We were passed a type, and maybe an id.
+      return load_by_id(firstArg, restArgs) if firstArg.is_a?(String)
+
+      # None of the above
+      raise ArgumentError.new
+    end
+
+    def load_by_id(firstArg, restArgs)
+      type = firstArg
+      id = restArgs.first
+
+      return Subjoin::get(mapped_type(type)) if id.nil?
+
+      Subjoin::get(URI([mapped_type(type), id].join('/')))
+    end
+      
+    
     # Take the data element and make an Array of instantiated Resource
     # objects. Turn single objects into a single item Array to be consistent.
     # @param c [Hash] Parsed JSON
