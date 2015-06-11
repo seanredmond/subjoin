@@ -59,12 +59,7 @@ module Subjoin
       end
 
       @data = load_data(contents)
-
-      if contents.has_key?("jsonapi")
-        @jsonapi = JsonApi.new(contents["jsonapi"])
-      else
-        @jsonapi = nil
-      end
+      @jsonapi = load_jsonapi(contents)
     end
 
     # @return [Boolean] true if there is primary data
@@ -86,7 +81,7 @@ module Subjoin
 
     # Take the data element and make an Array of instantiated Resource
     # objects. Turn single objects into a single item Array to be consistent.
-    # @param c [Hash, Array] Parsed JSON
+    # @param c [Hash] Parsed JSON
     # @return [Array, nil]
     def load_data(c)
       return nil unless c.has_key?("data")
@@ -98,7 +93,14 @@ module Subjoin
       return c["data"].map{|d| Resource.new(d, self)}
     end
 
-      
+    # Load jsonapi property if present
+    # @param c [Hash] Parsed JSON
+    # @return [Subjoin::JsonApi, nil]
+    def load_jsonapi(c)
+      return nil unless c.has_key?("jsonapi")
+      @jsonapi = JsonApi.new(c["jsonapi"])
+    end
+
     def mapped_type(t)
       d_type = type_map.fetch(t, nil)
       if d_type.nil?
