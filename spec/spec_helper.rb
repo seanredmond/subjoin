@@ -1,3 +1,6 @@
+require "codeclimate-test-reporter"
+CodeClimate::TestReporter.start
+
 require "subjoin"
 
 cwd = File.dirname(__FILE__)
