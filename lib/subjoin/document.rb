@@ -49,15 +49,7 @@ module Subjoin
 
       load_meta(contents['meta'])
       load_links(contents['links'])
-
-      if contents.has_key? "included"
-        @included = Inclusions.new(
-          contents['included'].map{|o| Resource.new(o, self)}
-        )
-      else
-        @included = nil
-      end
-
+      @included = load_included(contents)
       @data = load_data(contents)
       @jsonapi = load_jsonapi(contents)
     end
@@ -91,6 +83,16 @@ module Subjoin
 
       # Instantiate Resources for each array element
       return c["data"].map{|d| Resource.new(d, self)}
+    end
+
+    # Instantiate a {Subjoin::Inclusions object if the included property is
+    # present
+    # @param c [Hash] Parsed JSON
+    # @return [Subjoin::Inclusions, nil]
+    def load_included(c)
+      return nil unless c.has_key? "included"
+
+      Inclusions.new(c['included'].map{|o| Resource.new(o, self)})
     end
 
     # Load jsonapi property if present
