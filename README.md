@@ -136,11 +136,17 @@ Two Identifier objects are considered to be equal (==) if both their `type` and
 
 ### Relationships
 
-Resources may have [relationsips](http://jsonapi.org/format/#document-resource-object-relationships) to other resources.
+Resources may have
+[relationships](http://jsonapi.org/format/#document-resource-object-relationships)
+to other resources. There are two methods to access these:
+{Subjoin::Resource#relationships} which returns
+{Subjoin::Relationship} objects and {Subjoin::Resource#rels} which
+resolves the relationship linkages and returns to related
+{Subjoin::Resource} objects themselves. Using #relationships:
 
 
     article.relationships                    # A Hash of
-                                             # Subjoin::Relationship objects
+                                             #   Subjoin::Relationship objects
     article.relationships.keys               # ["author", "comments"]
 	article.relationships["author"]          # Subjoin::Links object
 	article.relationships["author"].links    # Array of Subjoin::Link objects
@@ -155,6 +161,16 @@ Or, in a compound document, the ```Identifiers``` in the ```linkages``` array ca
 
 	identifier = article.relationships.linkages.first
     document.included[identifier] # Returns the related resource
+
+It will almost always be simpler to use {Subjoin::Resource#rels}:
+
+    article.rels                      # A Hash of Arrays of
+                                      #   Subjoin::Resource objects
+    article.rels.keys                 # ["author", "comments"]
+    article.rels["author"].first      # Subjoin::Resource object. Remember,
+                                      #   #rels always returns an Array
+    article.rels("author").first      # Another way to say the same thing
+    article.rels["author"].first.type # "people"
 
 ### Links
 
