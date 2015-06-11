@@ -15,12 +15,12 @@ module Subjoin
 
 
     # Create a document. Parameters can take several forms:
-    # 1. A {URI} object: Document will be created from the URI
-    # 2. A {Hash}: The Hash is assumed to be a parsed JSON response and the
+    # 1. A URI object: Document will be created from the URI
+    # 2. A Hash: The Hash is assumed to be a parsed JSON response and the
     #    Document will be created from that
     # 3. One string: Assumed to be a JSON-API object type. An attempt will be
     #    made to map this type to a class that inherits from
-    #    {DerivableResource} and to load the create the Document from a URL
+    #    {InheritableResource} and to load the create the Document from a URL
     #    provided by that class. There is also the assumption that this URL
     #    returns all objects of that type.
     # 4. Two strings: Assumed to be a JSON-API object type and id. The same

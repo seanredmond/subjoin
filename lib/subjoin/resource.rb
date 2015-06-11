@@ -52,7 +52,11 @@ module Subjoin
     #   came itself.
     # @return [Hash, Array<Subjoin:Resource>, nil] If called with a spec
     # parameter, the return value will be an Array of {Subjoin::Resource}
-    # objects corresponding to the key, or nil if that key doesn't exist. If called without a spec parameter, the return value will be a Hash whose keys are the same as {relationships}, but whose values are Arrays of resolved {Resource} objects. In practice this means that you have a choice of idioms (method vs. hash) since
+    # objects corresponding to the key, or nil if that key doesn't exist. If
+    # called without a spec parameter, the return value will be a Hash whose
+    # keys are the same as {Resource#relationships}, but whose values are
+    # Arrays of resolved {Resource} objects. In practice this means that you
+    # have a choice of idioms (method vs. hash) since
     #
     #    obj.rels("key")
     #
