@@ -268,6 +268,76 @@ The data might be accessed in this way:
     article.meta           # Meta object
     article.meta.copyright # "Copyright 2015 Example Corp."
 
+## Using Inheritance
+
+Another way to use Subjoin is via inheritance. Using this approach you create
+your own classes to represent JSON-API resource types of a specific JSON-API
+server implementation. These classes must be sub-classes of
+```Subjoin::InheritableResource``` and must override a class variable,
+```ROOT_URI```, which should be the root of all URIs of the API. For instance,
+in the examples above, "http://example.com" would be the value of
+```ROOT_URI```. By default, Subjoin will use the lower-cased name of the class
+as the type in URIs. If the class name does not match the type, you can further
+override ```TYPE_PATH``` to indicate the name (or longer URI fragment) that
+should be used in URIs to request the resource type.
+
+Your custom classes must be part of the ```Subjoin``` module. You should
+probably create one sub-class of ```Subjoin::InheritableResource``` that
+overrides ```ROOT_URI```, and then create other classes as sub-classes of this:
+
+    require "subjoin"
+
+    module Subjoin
+        # Use this class as the parent of further subclasses.
+        # They will inherit the ROOT_URI defined here
+        class ExampleResource < Subjoin::InheritableResource
+            ROOT_URI="http://example.com"
+        end
+
+        # Subjoin will make requests to http://example.com/articles
+        class Articles < ExampleResource
+        end
+
+        # Use TYPE_PATH if you don't want to name the class the same thing as
+        # the type
+        class ArticleComments < ExampleResource
+            TYPE_PATH="comments"
+        end
+    end
+
+With the classes defined, there are several more options for retrieving data:
+
+    Articles::get                 # http://example.com/articles
+    Articles::get("1")            # http://example.com/articles/1
+    Document.new("articles")      # http://example.com/articles
+	Document.new("articles", "1") # http://example.com/articles/1
+
+Each of these versions returns a ```Document``` and any resources contained in ```data``` will be instantiated as ```Articles``` objects, e.g
+
+    Articles::get.data            # Array of Articles objects
+    Articles::get("1").data.first # An Articles object
+
+Furthermore, if there are included resources in the document, they will be
+instantiated as whatever matching subclasses of ```InheritableResource``` are
+available. If no matching class can be found, they will be instantiated as
+```Resource``` objects:
+
+    articles = Articles::get("1")               # Document
+    bkshd    = articles.data.first              # an Articles object
+
+    cmnt_id  = bkshd.relationships["comments"]. # first related comment
+	             linkages.first                 # resource identifier
+
+    comment  = articles.included[cmnt_id]       # an ArticleComments object
+	                                          
+    auth_id = bkshd.relationships["author"].    # first related author
+                  linkages.first                # resource identifier
+
+    author  = articles.included[auth_id]        # a Resource object, because
+                                                # we never defined a custom
+	                                            # class for authors resources
+
+
 ## Why is it called "Subjoin"
 
 Nice word. Sounds coder-y. Has most of the letters of "Ruby JSON-API".
