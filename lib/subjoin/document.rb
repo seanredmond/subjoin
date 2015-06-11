@@ -57,16 +57,8 @@ module Subjoin
       else
         @included = nil
       end
-      
-      if contents.has_key?("data")
-        if contents["data"].is_a? Hash
-          @data = [Resource.new(contents["data"], self)]
-        else
-          @data = contents["data"].map{|d| Resource.new(d, self)}
-        end
-      else
-        @data = nil
-      end
+
+      @data = load_data(contents)
 
       if contents.has_key?("jsonapi")
         @jsonapi = JsonApi.new(contents["jsonapi"])
@@ -91,6 +83,22 @@ module Subjoin
     end
 
     private
+
+    # Take the data element and make an Array of instantiated Resource
+    # objects. Turn single objects into a single item Array to be consistent.
+    # @param c [Hash, Array] Parsed JSON
+    # @return [Array, nil]
+    def load_data(c)
+      return nil unless c.has_key?("data")
+
+      #single resource, but instantiate it and stick it in an Array
+      return [Resource.new(c["data"], self)] if c["data"].is_a? Hash
+
+      # Instantiate Resources for each array element
+      return c["data"].map{|d| Resource.new(d, self)}
+    end
+
+      
     def mapped_type(t)
       d_type = type_map.fetch(t, nil)
       if d_type.nil?
