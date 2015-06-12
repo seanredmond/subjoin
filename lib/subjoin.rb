@@ -39,7 +39,7 @@ module Subjoin
   def self.get(uri, params={})
     params = {} if params.nil?
     uri_params = uri.query.nil? ? {} : param_flatten(CGI::parse(uri.query))
-    final_params = uri_params.merge(params)
+    final_params = uri_params.merge(stringify_params(params))
     response = @@conn.get(uri, final_params)
     data = JSON.parse response.body
 
@@ -54,5 +54,12 @@ module Subjoin
   # incompatible with Faraday.get, so flatten the values
   def self.param_flatten(p)
     Hash[p.map{|k,v| [k, v.join(',')]}]
+  end
+
+  # If param value is an Array, join elements into a string
+  # @param p [Hash] parameters
+  # @return [Hash] with arrays joined into strings
+  def self.stringify_params(p)
+    Hash[p.map{|k, v| [k, v.is_a?(Array) ? v.join(",") : v]}]
   end
 end
