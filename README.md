@@ -175,20 +175,38 @@ Note that the `href` is always returned as a `URI` object. If you have a {Subjoi
 
 ### Resource Identifiers
 
-[Resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects)
-occur in Relationship objects as pointers to other resources by ```type``` and
-```id``` (they may have, optionally, a ```meta``` attribute as well). Subjoin
-also constructs an Identifier object out of the ```type``` and ```id```
-attributes of a Resource (always without the ```meta```).
+Before getting to relationships, we should take a minute to look at
+[resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects). Above,
+we saw that every {Subjoin::Resource} has a `type` and `id`.
 
-    article.identifier      # Identifier.object
+    article.type # "articles"
+	article.id   # "1"
+
+Though the above attributes exist individually, these two attributes
+work together as a compound key and are, in fact put together in
+Subjoin as a {Subjoin::Identifer} object:
+
+    article.identifier      # Identifier object
     article.identifier.type # "articles"
 	article.identifier.id   # "1"
-    article.type            # "articles", from the Identifier object
-	article.id              # "1" from the Identifier object
 
-Two Identifier objects are considered to be equal (==) if both their `type` and
-`id` match. The ```meta``` attribute is ignored in tests for equality.
+{Subjoin::Identifier} objects are used for equality: two
+{Subjoin::Resource} objects are considered equal if they have equal
+`Identifer`s:
+
+    article1 == article2                                    # Really tests...
+    article1.identifier == article2.identifier              # Really tests...
+	article1.identifier.type == article2.identifier.type &&
+	    article1.identifer.id == article2.identifier.id
+
+More importantly, identifiers occur in Relationship objects as
+pointers to other resources. These pointers are called
+[linkages](http://jsonapi.org/format/#document-resource-object-linkage):
+
+    article.relationships.author.linkages # Array of Identifier objects
+
+They may have, optionally, a `meta` attribute as well, and `meta`
+attributes are ignored in tests for equality.
 
 ### Relationships
 
