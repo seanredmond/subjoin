@@ -119,6 +119,48 @@ As with {Subjoin::Document}, there are methods to see if any of the above are av
     article.has_links?
 	article.has_meta?
 
+### Links
+
+{Subjoin::Document}, {Subjoin::Resource}, and {Subjoin::Relationship} can all
+have [links](http://jsonapi.org/format/#document-links). They all have the
+{Subjoin::Linkable#links} method which returns a {Subjoin::Links} object:
+
+```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
+
+JSON-API allows for two formats: one simply with a link
+
+    "links": {
+      "self": "http://example.com/posts"
+    }
+
+and one with an ```href``` attribute and ```meta``` object:
+
+	"links": {
+	  "related": {
+		"href": "http://example.com/articles/1/comments",
+		"meta": {
+		  "count": 10
+		}
+	  }
+	}
+
+```Subjoin::Link``` objects treat either variation like the latter.
+
+    # Instantiated from the more complete format:
+    article.links["related"].href       # "http://example.com/articles/1/comments"
+    article.links["related"].has_meta?  # true
+    article.links["related"].meta.count # 10
+
+    # Instantiated from the simpler format:
+    article.links["self"].href          # "http://example.com/posts"
+    article.links["related"].has_meta?  # false
+    article.links["related"].meta       # nil
+
+If you have a ```Link``` you can get a new ```Document```
+
+    article.links["related"].get # Same thing as Subjoin::Document.new
+                                 # with the URL
+
 ### Resource Identifiers
 
 [Resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects)
@@ -173,44 +215,6 @@ It will almost always be simpler to use {Subjoin::Resource#rels}:
                                       #   #rels always returns an Array
     article.rels("author").first      # Another way to say the same thing
     article.rels["author"].first.type # "people"
-
-### Links
-
-```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
-
-JSON-API allows for two formats: one simply with a link
-
-    "links": {
-      "self": "http://example.com/posts"
-    }
-
-and one with an ```href``` attribute and ```meta``` object:
-
-	"links": {
-	  "related": {
-		"href": "http://example.com/articles/1/comments",
-		"meta": {
-		  "count": 10
-		}
-	  }
-	}
-
-```Subjoin::Link``` objects treat either variation like the latter.
-
-    # Instantiated from the more complete format:
-    article.links["related"].href       # "http://example.com/articles/1/comments"
-    article.links["related"].has_meta?  # true
-    article.links["related"].meta.count # 10
-
-    # Instantiated from the simpler format:
-    article.links["self"].href          # "http://example.com/posts"
-    article.links["related"].has_meta?  # false
-    article.links["related"].meta       # nil
-
-If you have a ```Link``` you can get a new ```Document```
-
-    article.links["related"].get # Same thing as Subjoin::Document.new
-                                 # with the URL
 
 ### Included Resources
 
