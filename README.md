@@ -71,6 +71,39 @@ present:
 
 ### Resources
 
+Every {Subjoin::Resource} has a `type` and `id`. The JSON response:
+
+    {
+      "data": {
+      "type": "articles",
+      "id": "1",
+      "attributes": {
+        "title": "JSON API paints my bikeshed!"
+	  },
+	  ...
+    }
+
+would correspond to:
+
+    article = doc.data.first
+    article.type
+	  => "articles"
+    article.id
+      => "1"
+
+Attributes can be accessed like hash on the object itself:
+
+    article["title"]
+      => "JSON API paints my bikeshed!"
+
+You can also get the entire attributes Hash as {Subjoin::Resource#attributes}:
+
+    article.attributes # Hash
+    article.attributes.keys
+      => ["title"]
+    article.attributes["title"]
+      => "JSON API paints my bikeshed!"
+
 A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single JSON-API object. Given this JSON:
 
 	{
