@@ -29,31 +29,36 @@ Then load http://localhost:8808 in your browser
 
 ## Usage
 
-The simplest starting point to create a ```Subjoin::Document``` with a URI:
-
-    require "subjoin"
-    doc = Subjoin::Document.new(URI("http://example.com/articles"))
-
-```Subjoin::document``` does not distinguish between simple and compound
-documents. Rather, the returned ```Subjoin::Document``` may have ```data```,
-```included```, ```links```, ```meta``` and/or ```jsonapi``` members based on
-the response.
-
 ### Document
 
-You can access all the expected members of the [top-level document](http://jsonapi.org/format/#document-top-level):
+Everything starts with a document, specifically a {Subjoin::Document}—the equivalent of a [JSON-API document](http://jsonapi.org/format/#document-structure)—which you can create with a URI (all examples here based on examples in the [JSON-API documentation](http://jsonapi.org/format/):
 
+	require "subjoin"
     doc = Subjoin::Document.new(URI("http://example.com/articles"))
-	doc.data     # Array of Resource objects
+
+Note that you must pass a
+[URI object](http://ruby-doc.org/stdlib-2.2.2/libdoc/uri/rdoc/URI.html). A
+string would be interpreted as a JSON-API ```type```.
+
+A {Subjoin::Document} probably has "primary data" which, if present is an Array
+of {Subjoin::Resource} objects:
+
+    doc.has_data?  # true if there is primary data
+      => true
+    doc.data       # Array of Subjoin::Resource objects
+    doc.data.first # One resource
+
+The `data` member of a JSON-API document can be either a single resource object
+or an array of resource objects. {Subjoin::Document#data} always returns an
+Array. In a document with a single resource object, the Array will have one
+element.
+
+You can access all the other members of the [top-level document](http://jsonapi.org/format/#document-top-level) (all the objects returned are covered below):
+
 	doc.links    # Links object
 	doc.included # Inclusions object
 	doc.meta     # Meta object
 	doc.jsonapi  # JsonApi object
-
-The ```#data``` attribute will always be an Array (or nil). If the document's
-```data``` member is an object because the document contains only one resource
-it will still be constructed as an ```Array``` (with one member) in the
-```Document``` object.
 
 There are, in addition, methods to test whether any of the above members are
 present:
