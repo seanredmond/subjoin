@@ -125,4 +125,14 @@ describe Subjoin::Resource do
       end
     end
   end
+
+  describe "#meta" do
+    before :each do
+      @article = Subjoin::Resource.new(URI("http://example.com/articles/1"))
+    end
+
+    it "returns a Meta object" do
+      expect(@article.meta).to be_an_instance_of Subjoin::Meta
+    end
+  end
 end

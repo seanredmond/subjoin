@@ -3,6 +3,7 @@ module Subjoin
     include Attributable
     #include Keyable
     include Linkable
+    include Metable
 
     # The relationships specified for the object
     # @return [Hash<Relationship>]
@@ -26,13 +27,12 @@ module Subjoin
         raise UnexpectedTypeError.new
       end
 
-      #load_key(data)
-
       @identifier = Identifier.new(data['type'], data['id'])
       
       load_attributes(data['attributes'])
       load_links(data['links'])
       @relationships = load_relationships(data['relationships'], @document)
+      @meta = load_meta(data['meta'])
     end
 
     def type
