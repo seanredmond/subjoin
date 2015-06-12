@@ -208,72 +208,116 @@ pointers to other resources. These pointers are called
 They may have, optionally, a `meta` attribute as well, and `meta`
 attributes are ignored in tests for equality.
 
-### Relationships
+### Relationships, Linkages, Included Resources
 
-Resources may have
+Okay, now we can get to how you'll really use JSON-API resources and why you would JSON-API over other options: resource linking and included resources.
+
+In many RESTful APIs, resources have embedded child resources which
+is, in my experience, a principle source of the bikeshedding arguments
+that JSON-API tries to avoid ("should X be a child of Y, or Y a child
+of X?" "How should the X response be different when it is achild of
+another resource?"). Instead of nesting and embedding, in JSON-API
+resources may have
 [relationships](http://jsonapi.org/format/#document-resource-object-relationships)
-to other resources. There are two methods to access these:
-{Subjoin::Resource#relationships} which returns
-{Subjoin::Relationship} objects and {Subjoin::Resource#rels} which
-resolves the relationship linkages and returns to related
-{Subjoin::Resource} objects themselves. Using #relationships:
+to other resources.
 
+    article.relationships        # A Hash of Subjoin::Relationship objects
+    article.relationships.keys
+      => ["author", "comments"]
 
-    article.relationships                    # A Hash of
-                                             #   Subjoin::Relationship objects
-    article.relationships.keys               # ["author", "comments"]
-	article.relationships["author"]          # Subjoin::Links object
-	article.relationships["author"].links    # Array of Subjoin::Link objects
-	article.relationships["author"].type     # "people"
-	article.relationships["author"].linkages # Array of Identifiers
+This much tells you that an "article" can have an "author" and
+"comments". In Subjoin, relationships are instantiated as
+{Subjoin::Relationship} objects whose two important properties are
+`links` and `linkages`. {Subjoin::Relationships} are
+{Subjoin::Linkable} so `links` works as it does in other objects.
 
-The related resources can be loaded from their links:
+    author = article.relationships["author"]    # Relationship object
+	author.links.keys
+      => ["self", "related"]
+    author.links["related"].to_s
+      => "http://example.com/articles/1/author"
+    author.links["related"].get                 # Get a new Document
 
-    article.relationships["author"].links.links["self"].get
+Alongside `links`, `linkages` give you resource identifiers for the
+related resources. while the "comments" `link` tells us how to get a
+document with all the related comments:
 
-Or, in a compound document, the ```Identifiers``` in the ```linkages``` array can be used to look up included resources:
+    comments.links["self"].to_s
+      => "http://example.com/articles/1/relationships/comments"
 
-	identifier = article.relationships.linkages.first
-    document.included[identifier] # Returns the related resource
+The corresponding `linkages` returns an Array of
+{Subjoin::Identifiers} that are pointers to specific resources:
 
-It will almost always be simpler to use {Subjoin::Resource#rels}:
+    comments = article.relationships["comments"]
+    comments.linkages.count
+      => 2
 
-    article.rels                      # A Hash of Arrays of
-                                      #   Subjoin::Resource objects
-    article.rels.keys                 # ["author", "comments"]
-    article.rels["author"].first      # Subjoin::Resource object. Remember,
-                                      #   #rels always returns an Array
-    article.rels("author").first      # Another way to say the same thing
-    article.rels["author"].first.type # "people"
+This tells us that there are two related comments. If we look at one,
+we can get the type and id:
 
-### Included Resources
+    comments.linkages[0].type
+      => "comments"
+    comments.linkages[0].id
+      => "5"
 
-Included resources are gathered into a ```Subjoin::Inclusions```
-object, and can be accessed in several ways. In the jsonapi.org
-[compund document example](http://jsonapi.org/format/#document-compound-documents),
-the ```article``` has a ```relationship``` to an ```author``` with the
-type and id (```linkage```) of "person" and "9". In a Subjoin
-```Document```, the included ```Resource``` can be fetched via the
-```Identifer``` from the ```linkages``` of a ```Relationship```:
+So far so good, but now what? [Inclusion](http://jsonapi.org/format/#fetching-includes)
 
-    doc = Subjoin::Document.new(""http://example.com/articles/1")
-	article = doc.data.first
-	authrel = article.relationships["author"].linkages.first # Identifier
-	auth = doc.included[authrel]                             # Resource 
+With JSON-API, you can request that these related resources be included in the document, one of three ways:
 
-By an array containing a type and an id:
+    # URI parameters
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1?include=author,comments"))
 
-    auth = doc.included[["people", "9"]]
+    # Parameters Hash with a string
+    doc = Subjoin::Document.new(URI("http://example.com/article/1s", {"include" => "author,comments"}))
 
-By index
+    # Parameters Hash with an array of strings
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => ["author" ,"comments"]}))
 
-    auth = doc.included[0]
+All three are equivalent. The array of strings version works especially well with relationship keys
 
-All these methods return ```nil``` if there is so matching
-resource. There also a couple of convenience methods:
+    doc2 = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => articles.relationships.keys}))
 
-    doc.included.all   # Get the full array of included resources
-    doc.included.first # Get the first included resource
+When a document is requested with included resources, they can be accessed via `included`
+
+    # Get the document
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => ["author" ,"comments"]}))
+
+	# Get the article
+    article = doc.data.first
+
+	# Get the realted author identifier
+    auth_identifier = article.related["author"].linkages.first
+    auth_identifier.type
+      => "people"
+    auth_identifier.id
+      => "9"
+
+    # Get the embedded resource
+    doc.has_included?
+      => true
+
+    # Look up included resource by identifier
+    author = doc.included[auth_identifier]
+
+    # Now we have access to the whole author resource
+	author.type
+      => "people"
+    author.id
+      => "9"
+    author["twitter"]
+      => "dgeb"
+
+If that sounds kind of complicated, it is. But you can...
+
+### Let Subjoin resolve the linkages for you
+
+To make all this easier, {Subjoin::Resource} provides a `rels` method that does all this under the hood:
+
+    article.rels.keys
+      => ["author", "comments"]
+    author = article.rels["author"] # Returns the author Resource
+    author["twitter"]
+      => "dgeb"
 
 ### Meta Information
 
