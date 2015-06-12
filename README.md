@@ -91,69 +91,33 @@ would correspond to:
     article.id
       => "1"
 
-Attributes can be accessed like hash on the object itself:
+The attributes of a {Subjoin::Resource} object, or any object that includes
+{Subjoin::Attributable}, can be accessed like hash on the object itself:
 
     article["title"]
       => "JSON API paints my bikeshed!"
 
-You can also get the entire attributes Hash as {Subjoin::Resource#attributes}:
+You can also get the entire attributes Hash as
+{Subjoin::Attributable#attributes}:
 
     article.attributes # Hash
     article.attributes.keys
       => ["title"]
     article.attributes["title"]
-      => "JSON API paints my bikeshed!"
+    => "JSON API paints my bikeshed!"
 
-A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single JSON-API object. Given this JSON:
+The other expected members of a
+[resource object](http://jsonapi.org/format/#document-resource-objects) are
+available. The objects returned by these methods are all explained below:
 
-	{
-	  "data": {
-		"type": "articles",
-		"id": "1",
-		"attributes": {
-		  "title": "JSON API paints my bikeshed!"
-		},
-		"links": {
-		  "self": "http://example.com/articles/1"
-		},
-		"relationships": {
-		  "author": {
-			"links": {
-			  "self": "http://example.com/articles/1/relationships/author",
-			  "related": "http://example.com/articles/1/author"
-			},
-			"data": { "type": "people", "id": "9" }
-		  },
-		  "comments": {
-			"links": {
-			  "self": "http://example.com/articles/1/relationships/comments",
-			  "related": "http://example.com/articles/1/comments"
-			},
-			"data": [
-			  { "type": "comments", "id": "5" },
-			  { "type": "comments", "id": "12" }
-			]
-		  }
-		}
-	  }
-	}
+    article.links         # Links object
+    article.relationships # Array of Relationship objects
+    article.meta          # Meta object
 
-The equivalent ```Subjoin::Resource``` object has a number of methods for
-accessing the data.
+As with {Subjoin::Document}, there are methods to see if any of the above are available
 
-    doc = Subjoin::Document.new(URI("http://example.com/articles/1"))
-	article = doc.data.first             # the Resource
-    article.type                         # "articles"
-    article.id                           # "1"
-	article.links                        # A Subjoin::Links object
-	article.links["self"].href           # "http://example.com/articles/1"
-    article.relationships                # A Hash of Subjoin::Relationship objects
-
-Attributes are accessible directly through like Hash keys or through the
-```attributes``` Hash
-
-    article["title"]               # Both return 
-    article.attributes["title"] # "JSON API paints my bikeshed!"
+    article.has_links?
+	article.has_meta?
 
 ### Resource Identifiers
 
