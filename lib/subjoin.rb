@@ -47,10 +47,38 @@ module Subjoin
     Hash[p.map{|k,v| [k, v.join(',')]}]
   end
 
-  # If param value is an Array, join elements into a string
+  # If param value is an Array, join elements into a string. `field` parameters
+  # passed as a Hash will be converted to key value pairs like
+  # "field[type]"="fields1,field2"
   # @param p [Hash] parameters
   # @return [Hash] with arrays joined into strings
   def self.stringify_params(p)
-    Hash[p.map{|k, v| [k, v.is_a?(Array) ? v.join(",") : v]}]
+    fieldify(Hash[p.map{|k, v| [k, stringify_value(v, k) ]}])
+  end
+
+  # Turn parameter values into Strings if they are Hashes or Arrays
+  # @param v The value to check
+  # @param k The key corresponding to the value passed in
+  # @return [String,Hash] If a Hash is returned it will be taken care of by
+  #   {fieldify}
+  def self.stringify_value(v, k=nil)
+    return v if v.is_a?(String)
+    return v.join(",") if v.is_a?(Array)
+    if v.is_a?(Hash)
+      return Hash[v.map{|key, val| ["#{k}[#{key}]", stringify_value(val)]}]
+    end
+    raise ArgumentError.new
+  end
+
+  # If a field paramter has been passed as a Hash it will still be a Hash and
+  # and we want to replace `field` with it's value
+  # @param h [Hash]
+  def self.fieldify(h)
+    if h.has_key? "fields"
+      f = h.delete("fields")
+      return h.merge(f)
+    end
+
+    return h
   end
 end
