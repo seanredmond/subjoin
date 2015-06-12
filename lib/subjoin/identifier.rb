@@ -10,7 +10,7 @@ module Subjoin
       #load_key(data)
       @type = type
       @id = id
-      load_meta(meta)
+      @meta = load_meta(meta)
     end
 
     def ==(other)

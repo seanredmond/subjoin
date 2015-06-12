@@ -34,7 +34,7 @@ module Subjoin
 
       contents = load_by_type(args[0], args[1..-1])
 
-      load_meta(contents['meta'])
+      @meta = load_meta(contents['meta'])
       load_links(contents['links'])
       @included = load_included(contents)
       @data = load_data(contents)

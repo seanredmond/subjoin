@@ -8,7 +8,7 @@ module Subjoin
       @document = doc
       load_links(data['links'])
       @linkages = load_linkages(data['data'], doc)
-      load_meta(data['meta'])
+      @meta = load_meta(data['meta'])
     end
 
     def lookup
