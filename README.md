@@ -31,10 +31,14 @@ Then load http://localhost:8808 in your browser
 
 ### Document
 
-Everything starts with a document, specifically a {Subjoin::Document}—the equivalent of a [JSON-API document](http://jsonapi.org/format/#document-structure)—which you can create with a URI (all examples here based on examples in the [JSON-API documentation](http://jsonapi.org/format/):
+Everything starts with a document, specifically a {Subjoin::Document} -- the equivalent of a {http://jsonapi.org/format/ JSON-API document} which you
+can create with a URI:
 
 	require "subjoin"
     doc = Subjoin::Document.new(URI("http://example.com/articles"))
+
+(all examples here based on examples in the
+[JSON-API documentation](http://jsonapi.org/format/))
 
 Note that you must pass a
 [URI object](http://ruby-doc.org/stdlib-2.2.2/libdoc/uri/rdoc/URI.html). A
@@ -122,42 +126,49 @@ As with {Subjoin::Document}, there are methods to see if any of the above are av
 ### Links
 
 {Subjoin::Document}, {Subjoin::Resource}, and {Subjoin::Relationship} can all
-have [links](http://jsonapi.org/format/#document-links). They all have the
-{Subjoin::Linkable#links} method which returns a Hash of {Subjoin::Link}
+have [links](http://jsonapi.org/format/#document-links). They all have
+the {Subjoin::Linkable#links} method which returns a Hash of {Subjoin::Link}
 objects:
 
-```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
+	article.links.keys
+	  => ["self"]
+    article.links["self"].href.to_s
+      => "http://example.com/articles/1"
 
-JSON-API allows for two formats: one simply with a link
+JSON-API allows for two link object formats. One simply has a link
 
     "links": {
-      "self": "http://example.com/posts"
+      "self": "http://example.com/articles/1"
     }
 
-and one with an ```href``` attribute and ```meta``` object:
+and one has an `href` attribute and `meta` object:
 
-	"links": {
-	  "related": {
-		"href": "http://example.com/articles/1/comments",
-		"meta": {
-		  "count": 10
-		}
-	  }
-	}
+    "links": {
+      "related": {
+        "href": "http://example.com/articles/1/comments",
+        "meta": {
+          "count": 10
+        }
+      }
+    }
 
-```Subjoin::Link``` objects treat either variation like the latter.
+Subjoin treats either variation like the latter:
 
-    # Instantiated from the more complete format:
-    article.links["related"].href       # "http://example.com/articles/1/comments"
-    article.links["related"].has_meta?  # true
-    article.links["related"].meta.count # 10
+    article.links["self"].href.to_s
+      => "http://example.com/articles/1"
+    article.links["self"].has_meta?
+      => false
+    article.links["self"].meta?
+      => nil
 
-    # Instantiated from the simpler format:
-    article.links["self"].href          # "http://example.com/posts"
-    article.links["related"].has_meta?  # false
-    article.links["related"].meta       # nil
+    article.links["related"].href.to_s
+      => "http://example.com/articles/1/comments"
+    article.links["related"].has_meta?
+      => true
+    article.links["related"].meta["count"]
+      => 10
 
-If you have a ```Link``` you can get a new ```Document```
+Note that the `href` is always returned as a `URI` object. If you have a {Subjoin::Link} you can get the corresponding {Subjoin::Document}:
 
     article.links["related"].get # Same thing as Subjoin::Document.new
                                  # with the URL
