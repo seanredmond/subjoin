@@ -8,7 +8,7 @@ describe Subjoin::Relationship do
   end
 
   it "is linkable" do
-    expect(@auths.links).to be_an_instance_of(Subjoin::Links)
+    expect(@auths.links.map{|k,v| v.class}.uniq).to eq [Subjoin::Link]
   end
 
   it "has the right links" do

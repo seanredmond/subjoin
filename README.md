@@ -55,7 +55,7 @@ element.
 
 You can access all the other members of the [top-level document](http://jsonapi.org/format/#document-top-level) (all the objects returned are covered below):
 
-	doc.links    # Links object
+	doc.links    # Hash of Link objects
 	doc.included # Inclusions object
 	doc.meta     # Meta object
 	doc.jsonapi  # JsonApi object
@@ -110,7 +110,7 @@ The other expected members of a
 [resource object](http://jsonapi.org/format/#document-resource-objects) are
 available. The objects returned by these methods are all explained below:
 
-    article.links         # Links object
+    article.links         # Hash of Link objects
     article.relationships # Array of Relationship objects
     article.meta          # Meta object
 
@@ -123,7 +123,8 @@ As with {Subjoin::Document}, there are methods to see if any of the above are av
 
 {Subjoin::Document}, {Subjoin::Resource}, and {Subjoin::Relationship} can all
 have [links](http://jsonapi.org/format/#document-links). They all have the
-{Subjoin::Linkable#links} method which returns a {Subjoin::Links} object:
+{Subjoin::Linkable#links} method which returns a Hash of {Subjoin::Link}
+objects:
 
 ```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
 

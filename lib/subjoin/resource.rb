@@ -30,7 +30,7 @@ module Subjoin
       @identifier = Identifier.new(data['type'], data['id'])
       
       load_attributes(data['attributes'])
-      load_links(data['links'])
+      @links = load_links(data['links'])
       @relationships = load_relationships(data['relationships'], @document)
       @meta = load_meta(data['meta'])
     end

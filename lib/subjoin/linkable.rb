@@ -5,12 +5,10 @@ module Subjoin
     
     # Load the object's links
     # @param data [Hash] The object's parsed JSON `links` member
+    # @return [Hash]
     def load_links(data)
-      if data.nil?
-        @links = nil if data.nil?
-      else
-        @links = Links.new(data)
-      end
+      return nil if data.nil?
+      Hash[data.map{|k, v| [k, Link.new(v)]}]
     end
 
     def has_links?

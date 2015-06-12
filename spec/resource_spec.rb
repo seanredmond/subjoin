@@ -71,7 +71,7 @@ describe Subjoin::Resource do
 
     context "with no parameter" do
       it "returns a Hash of all the links" do
-        expect(@article.links).to be_an_instance_of Subjoin::Links
+        expect(@article.links.map{|k,v| v.class}.uniq).to eq [Subjoin::Link]
       end
     end
 

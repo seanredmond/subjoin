@@ -6,7 +6,7 @@ module Subjoin
     attr_reader :links, :linkages
     def initialize(data, doc)
       @document = doc
-      load_links(data['links'])
+      @links = load_links(data['links'])
       @linkages = load_linkages(data['data'], doc)
       @meta = load_meta(data['meta'])
     end
