@@ -41,6 +41,15 @@ describe Subjoin::Document do
                .and_return(double(Faraday::Response, :body => ARTICLE))
         Subjoin::Document.new("articles")
       end
+
+      it "returns objects of the right class" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+
+        expect(Subjoin::Document.new("articles").data.first).
+          to be_an_instance_of Fixnum
+      end
     end
 
     context "with two string parameters" do
