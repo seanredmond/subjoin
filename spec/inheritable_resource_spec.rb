@@ -48,7 +48,7 @@ describe Subjoin::Document do
               and_return(double(Faraday::Response, :body => COMPOUND))
 
         expect(Subjoin::Document.new("articles").data.first).
-          to be_an_instance_of Fixnum
+          to be_an_instance_of Subjoin::ExampleArticle
       end
     end
 
