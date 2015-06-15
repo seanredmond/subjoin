@@ -13,6 +13,11 @@ module Subjoin
   class ExampleArticle < ExampleResource
     TYPE_PATH="articles"
   end
+
+  class ExamplePerson < ExampleResource
+    TYPE_PATH="people"
+  end
+
 end
 
 describe Subjoin::Inheritable do
@@ -49,6 +54,24 @@ describe Subjoin::Document do
 
         expect(Subjoin::Document.new("articles").data.first).
           to be_an_instance_of Subjoin::ExampleArticle
+      end
+
+      it "returns included objects of the right class" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+        expect(Subjoin::Document.new("articles").data.first.
+                rels["author"].first).
+          to be_an_instance_of Subjoin::ExamplePerson
+      end
+
+      it "returns Resource objects when there is no mapped type" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+        expect(Subjoin::Document.new("articles").data.first.
+                rels["comments"].first).
+          to be_an_instance_of Subjoin::Resource
       end
     end
 

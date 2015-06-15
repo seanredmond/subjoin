@@ -103,7 +103,7 @@ module Subjoin
     def load_included(c)
       return nil unless c.has_key? "included"
 
-      Inclusions.new(c['included'].map{|o| Resource.new(o, self)})
+      Inclusions.new(c['included'].map{|o| mapped_type(o["type"]).new(o, self)})
     end
 
     # Load jsonapi property if present
