@@ -85,5 +85,5 @@ describe Subjoin::Document do
     end
   end
 end
-      
+
   
