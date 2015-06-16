@@ -76,9 +76,9 @@ module Subjoin
       type = firstArg
       id = restArgs.first
 
-      return Subjoin::get(mapped_type(type)) if id.nil?
+      return Subjoin::get(mapped_type(type)::type_url) if id.nil?
 
-      Subjoin::get(URI([mapped_type(type), id].join('/')))
+      Subjoin::get(URI([mapped_type(type)::type_url, id].join('/')))
     end
       
     
@@ -90,10 +90,10 @@ module Subjoin
       return nil unless c.has_key?("data")
 
       #single resource, but instantiate it and stick it in an Array
-      return [Resource.new(c["data"], self)] if c["data"].is_a? Hash
+      return [mapped_type(c["data"]["type"]).new(c["data"], self)] if c["data"].is_a? Hash
 
       # Instantiate Resources for each array element
-      return c["data"].map{|d| Resource.new(d, self)}
+      return c["data"].map{|d| mapped_type(d["type"]).new(d, self)}
     end
 
     # Instantiate a {Subjoin::Inclusions object if the included property is
@@ -103,7 +103,7 @@ module Subjoin
     def load_included(c)
       return nil unless c.has_key? "included"
 
-      Inclusions.new(c['included'].map{|o| Resource.new(o, self)})
+      Inclusions.new(c['included'].map{|o| mapped_type(o["type"]).new(o, self)})
     end
 
     # Load jsonapi property if present
@@ -115,11 +115,7 @@ module Subjoin
     end
 
     def mapped_type(t)
-      d_type = type_map.fetch(t, nil)
-      if d_type.nil?
-        throw ArgumentError
-      end
-      return d_type::type_url
+      type_map.fetch(t, Resource)
     end
       
     def type_map
@@ -129,7 +125,7 @@ module Subjoin
     def create_type_map
       d_types = Subjoin.constants.
                 map{|c| Subjoin.const_get(c)}.
-                select{|c| c.is_a?(Class) and c < Subjoin::InheritableResource}
+                select{|c| c.is_a?(Class) and c < Subjoin::Inheritable}
       Hash[d_types.map{|c| [c::type_id, c]}]
     end
   end
