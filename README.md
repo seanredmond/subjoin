@@ -126,8 +126,8 @@ As with {Subjoin::Document}, there are methods to see if any of the above are av
 ### Links
 
 {Subjoin::Document}, {Subjoin::Resource}, and {Subjoin::Relationship} can all
-have [links](http://jsonapi.org/format/#document-links). They all have
-the {Subjoin::Linkable#links} method which returns a Hash of {Subjoin::Link}
+have {http://jsonapi.org/format/#document-links links}. They all have
+the {Subjoin::Linkable}#links method which returns a Hash of {Subjoin::Link}
 objects:
 
 	article.links.keys
@@ -184,7 +184,7 @@ we saw that every {Subjoin::Resource} has a `type` and `id`.
 
 Though the above attributes exist individually, these two attributes
 work together as a compound key and are, in fact put together in
-Subjoin as a {Subjoin::Identifer} object:
+Subjoin as a {Subjoin::Identifier} object:
 
     article.identifier      # Identifier object
     article.identifier.type # "articles"
@@ -228,7 +228,7 @@ to other resources.
 This much tells you that an "article" can have an "author" and
 "comments". In Subjoin, relationships are instantiated as
 {Subjoin::Relationship} objects whose two important properties are
-`links` and `linkages`. {Subjoin::Relationships} are
+`links` and `linkages`. {Subjoin::Relationship} are
 {Subjoin::Linkable} so `links` works as it does in other objects.
 
     author = article.relationships["author"]    # Relationship object
@@ -246,7 +246,7 @@ document with all the related comments:
       => "http://example.com/articles/1/relationships/comments"
 
 The corresponding `linkages` returns an Array of
-{Subjoin::Identifiers} that are pointers to specific resources:
+{Subjoin::Identifier} that are pointers to specific resources:
 
     comments = article.relationships["comments"]
     comments.linkages.count
