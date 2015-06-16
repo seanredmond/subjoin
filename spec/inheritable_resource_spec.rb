@@ -10,8 +10,8 @@ module Subjoin
     TYPE_PATH="nonstandard"
   end
 
-  class ExampleArticle < ExampleResource
-    TYPE_PATH="articles"
+  class Articles < ExampleResource
+    #TYPE_PATH="articles"
   end
 
   class ExamplePerson < ExampleResource
@@ -53,7 +53,7 @@ describe Subjoin::Document do
               and_return(double(Faraday::Response, :body => COMPOUND))
 
         expect(Subjoin::Document.new("articles").data.first).
-          to be_an_instance_of Subjoin::ExampleArticle
+          to be_an_instance_of Subjoin::Articles
       end
 
       it "returns included objects of the right class" do
