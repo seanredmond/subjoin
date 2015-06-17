@@ -410,6 +410,12 @@ Now, when you get a document, the resources in it will be mapped to an available
     author.class
       => Subjoin::Resource
 
+## Limitations
+
+Subjoin currently only supports GET requests.
+
+Some features, such as pagination, should work generically but could
+have more convenient methods to handle them.
 
 ## Why is it called "Subjoin"
 
