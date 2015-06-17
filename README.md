@@ -31,7 +31,7 @@ Then load http://localhost:8808 in your browser
 
 ### Document
 
-Everything starts with a document, specifically a {Subjoin::Document} -- the equivalent of a {http://jsonapi.org/format/ JSON-API document} which you
+Everything starts with a document, specifically a `Subjoin::Document` -- the equivalent of a [JSON-API document](http://jsonapi.org/format/) which you
 can create with a URI:
 
 	require "subjoin"
@@ -42,10 +42,10 @@ can create with a URI:
 
 Note that you must pass a
 [URI object](http://ruby-doc.org/stdlib-2.2.2/libdoc/uri/rdoc/URI.html). A
-string would be interpreted as a JSON-API ```type```.
+string would be interpreted as a JSON-API `type`.
 
-A {Subjoin::Document} probably has "primary data" which, if present is an Array
-of {Subjoin::Resource} objects:
+A `Subjoin::Document` probably has "primary data" which, if present is an Array
+of `Subjoin::Resource` objects:
 
     doc.has_data?  # true if there is primary data
       => true
@@ -53,7 +53,7 @@ of {Subjoin::Resource} objects:
     doc.data.first # One resource
 
 The `data` member of a JSON-API document can be either a single resource object
-or an array of resource objects. {Subjoin::Document#data} always returns an
+or an array of resource objects. `Subjoin::Document#data` always returns an
 Array. In a document with a single resource object, the Array will have one
 element.
 
@@ -75,7 +75,7 @@ present:
 
 ### Resources
 
-Every {Subjoin::Resource} has a `type` and `id`. The JSON response:
+Every `Subjoin::Resource` has a `type` and `id`. The JSON response:
 
     {
       "data": {
@@ -95,14 +95,15 @@ would correspond to:
     article.id
       => "1"
 
-The attributes of a {Subjoin::Resource} object, or any object that includes
-{Subjoin::Attributable}, can be accessed like hash on the object itself:
+The attributes of a `Subjoin::Resource` object, or any object that
+includes `Subjoin::Attributable`, can be accessed like hash on the
+object itself:
 
     article["title"]
       => "JSON API paints my bikeshed!"
 
 You can also get the entire attributes Hash as
-{Subjoin::Attributable#attributes}:
+`Subjoin::Attributable#attributes`:
 
     article.attributes # Hash
     article.attributes.keys
@@ -118,16 +119,16 @@ available. The objects returned by these methods are all explained below:
     article.relationships # Array of Relationship objects
     article.meta          # Meta object
 
-As with {Subjoin::Document}, there are methods to see if any of the above are available
+As with `Subjoin::Document`, there are methods to see if any of the above are available
 
     article.has_links?
 	article.has_meta?
 
 ### Links
 
-{Subjoin::Document}, {Subjoin::Resource}, and {Subjoin::Relationship} can all
-have {http://jsonapi.org/format/#document-links links}. They all have
-the {Subjoin::Linkable}#links method which returns a Hash of {Subjoin::Link}
+`Subjoin::Document`, `Subjoin::Resource`, and `Subjoin::Relationship` can all
+have [links](http://jsonapi.org/format/#document-links). They all have
+the `Subjoin::Linkable#links` method which returns a Hash of `Subjoin::Link`
 objects:
 
 	article.links.keys
@@ -168,7 +169,7 @@ Subjoin treats either variation like the latter:
     article.links["related"].meta["count"]
       => 10
 
-Note that the `href` is always returned as a `URI` object. If you have a {Subjoin::Link} you can get the corresponding {Subjoin::Document}:
+Note that the `href` is always returned as a `URI` object. If you have a `Subjoin::Link` you can get the corresponding `Subjoin::Document`:
 
     article.links["related"].get # Same thing as Subjoin::Document.new
                                  # with the URL
@@ -177,21 +178,21 @@ Note that the `href` is always returned as a `URI` object. If you have a {Subjoi
 
 Before getting to relationships, we should take a minute to look at
 [resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects). Above,
-we saw that every {Subjoin::Resource} has a `type` and `id`.
+we saw that every `Subjoin::Resource` has a `type` and `id`.
 
     article.type # "articles"
 	article.id   # "1"
 
 Though the above attributes exist individually, these two attributes
 work together as a compound key and are, in fact put together in
-Subjoin as a {Subjoin::Identifier} object:
+Subjoin as a `Subjoin::Identifier` object:
 
     article.identifier      # Identifier object
     article.identifier.type # "articles"
 	article.identifier.id   # "1"
 
-{Subjoin::Identifier} objects are used for equality: two
-{Subjoin::Resource} objects are considered equal if they have equal
+`Subjoin::Identifier` objects are used for equality: two
+`Subjoin::Resource` objects are considered equal if they have equal
 `Identifer`s:
 
     article1 == article2                                    # Really tests...
@@ -227,9 +228,9 @@ to other resources.
 
 This much tells you that an "article" can have an "author" and
 "comments". In Subjoin, relationships are instantiated as
-{Subjoin::Relationship} objects whose two important properties are
-`links` and `linkages`. {Subjoin::Relationship} are
-{Subjoin::Linkable} so `links` works as it does in other objects.
+`Subjoin::Relationship` objects whose two important properties are
+`links` and `linkages`. `Subjoin::Relationship` are
+`Subjoin::Linkable` so `links` works as it does in other objects.
 
     author = article.relationships["author"]    # Relationship object
 	author.links.keys
@@ -246,7 +247,7 @@ document with all the related comments:
       => "http://example.com/articles/1/relationships/comments"
 
 The corresponding `linkages` returns an Array of
-{Subjoin::Identifier} that are pointers to specific resources:
+`Subjoin::Identifier` that are pointers to specific resources:
 
     comments = article.relationships["comments"]
     comments.linkages.count
@@ -311,7 +312,7 @@ If that sounds kind of complicated, it is. But you can...
 
 ### Let Subjoin resolve the linkages for you
 
-To make all this easier, {Subjoin::Resource} provides a `rels` method that does all this under the hood:
+To make all this easier, `Subjoin::Resource` provides a `rels` method that does all this under the hood:
 
     article.rels.keys
       => ["author", "comments"]
