@@ -263,7 +263,8 @@ we can get the type and id:
 
 So far so good, but now what? [Inclusion](http://jsonapi.org/format/#fetching-includes)
 
-With JSON-API, you can request that these related resources be included in the document, one of three ways:
+With Subjoin, you can request that these related resources be included
+in the document, one of three ways:
 
     # URI parameters
     doc = Subjoin::Document.new(URI("http://example.com/articles/1?include=author,comments"))
