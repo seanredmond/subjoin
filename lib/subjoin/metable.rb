@@ -8,9 +8,10 @@ module Subjoin
 
     # Load the object's attributes
     # @param data [Hash] The object's parsed JSON `meta` member
+    # @return [Metable,nil]
     def load_meta(data)
       return nil if data.nil?
-      @meta = Meta.new(data)
+      Meta.new(data)
     end
 
     def has_meta?

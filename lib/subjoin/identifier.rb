@@ -1,6 +1,7 @@
 module Subjoin
+  # A resource identifier object
+  # @see http://jsonapi.org/format/#document-resource-identifier-objects
   class Identifier
-#    include Keyable
     include Metable
 
     attr_reader :type
@@ -10,9 +11,11 @@ module Subjoin
       #load_key(data)
       @type = type
       @id = id
-      load_meta(meta)
+      @meta = load_meta(meta)
     end
 
+    # Test for equality. Two Ideintifers are considered equal if they
+    # have the same type and id
     def ==(other)
       return @type == other.type && @id == other.id
     end

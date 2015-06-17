@@ -1,7 +1,8 @@
 require "spec_helper"
 
 module Subjoin
-  class ExampleResource < Subjoin::InheritableResource
+  class ExampleResource < Resource
+    include Inheritable
     ROOT_URI="http://example.com"
   end
 
@@ -9,31 +10,24 @@ module Subjoin
     TYPE_PATH="nonstandard"
   end
 
-  class PoorlySubclassed < Subjoin::InheritableResource
+  class Articles < ExampleResource
+    #TYPE_PATH="articles"
   end
 
-  class ExampleArticle < ExampleResource
-    TYPE_PATH="articles"
+  class ExamplePerson < ExampleResource
+    TYPE_PATH="people"
   end
+
 end
 
-describe Subjoin::InheritableResource do
+describe Subjoin::Inheritable do
   before :each do
     allow_any_instance_of(Faraday::Connection).
       to receive(:get).and_return(double(Faraday::Response, :body => ARTICLE))
-    @sub    = Subjoin::ExampleResource.new(URI("http://example.com/articles/1"))
-    @nonstd = Subjoin::NonStandardUri.new(URI("http://example.com/articles/1"))
-    @unsub  = Subjoin::Resource.new(URI("http://example.com/articles/1"))
-    @poor   = Subjoin::PoorlySubclassed.new(URI("http://example.com/articles/1"))
-    Subjoin::Document.new({})
   end
   
   it "has a root uri" do
     expect(Subjoin::ExampleResource::ROOT_URI).to eq "http://example.com"
-  end
-  
-  it "has a different class" do
-    expect(@sub.class).to eq Subjoin::ExampleResource
   end
   
   describe "#type_url" do
@@ -48,21 +42,48 @@ describe Subjoin::Document do
     context "with a single string parameter" do
       it "maps derived types" do
         expect_any_instance_of(Faraday::Connection)
-          .to receive(:get).with(URI("http://example.com/articles"), {})
+          .to receive(:get).with(URI("http://example.com/articles"), {}, Hash)
                .and_return(double(Faraday::Response, :body => ARTICLE))
         Subjoin::Document.new("articles")
+      end
+
+      it "returns objects of the right class" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+
+        expect(Subjoin::Document.new("articles").data.first).
+          to be_an_instance_of Subjoin::Articles
+      end
+
+      it "returns included objects of the right class" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+        expect(Subjoin::Document.new("articles").data.first.
+                rels["author"].first).
+          to be_an_instance_of Subjoin::ExamplePerson
+      end
+
+      it "returns Resource objects when there is no mapped type" do
+        expect_any_instance_of(Faraday::Connection).
+          to receive(:get).
+              and_return(double(Faraday::Response, :body => COMPOUND))
+        expect(Subjoin::Document.new("articles").data.first.
+                rels["comments"].first).
+          to be_an_instance_of Subjoin::Resource
       end
     end
 
     context "with two string parameters" do
       it "maps derived types with the second string as an id" do
         expect_any_instance_of(Faraday::Connection)
-          .to receive(:get).with(URI("http://example.com/articles/2"), {})
+          .to receive(:get).with(URI("http://example.com/articles/2"), {}, Hash)
                .and_return(double(Faraday::Response, :body => ARTICLE))
         Subjoin::Document.new("articles", "2")
       end
     end
   end
 end
-      
+
   

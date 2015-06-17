@@ -29,6 +29,9 @@
           { "type": "comments", "id": "12" }
         ]
       }
+    },
+    "meta": {
+      "reason": "To have an example meta object"
     }
   }
 }

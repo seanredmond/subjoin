@@ -29,31 +29,40 @@ Then load http://localhost:8808 in your browser
 
 ## Usage
 
-The simplest starting point to create a ```Subjoin::Document``` with a URI:
-
-    require "subjoin"
-    doc = Subjoin::Document.new(URI("http://example.com/articles"))
-
-```Subjoin::document``` does not distinguish between simple and compound
-documents. Rather, the returned ```Subjoin::Document``` may have ```data```,
-```included```, ```links```, ```meta``` and/or ```jsonapi``` members based on
-the response.
-
 ### Document
 
-You can access all the expected members of the [top-level document](http://jsonapi.org/format/#document-top-level):
+Everything starts with a document, specifically a `Subjoin::Document` -- the equivalent of a [JSON-API document](http://jsonapi.org/format/) which you
+can create with a URI:
 
+	require "subjoin"
     doc = Subjoin::Document.new(URI("http://example.com/articles"))
-	doc.data     # Array of Resource objects
-	doc.links    # Links object
+
+(all examples here based on examples in the
+[JSON-API documentation](http://jsonapi.org/format/))
+
+Note that you must pass a
+[URI object](http://ruby-doc.org/stdlib-2.2.2/libdoc/uri/rdoc/URI.html). A
+string would be interpreted as a JSON-API `type`.
+
+A `Subjoin::Document` probably has "primary data" which, if present is an Array
+of `Subjoin::Resource` objects:
+
+    doc.has_data?  # true if there is primary data
+      => true
+    doc.data       # Array of Subjoin::Resource objects
+    doc.data.first # One resource
+
+The `data` member of a JSON-API document can be either a single resource object
+or an array of resource objects. `Subjoin::Document#data` always returns an
+Array. In a document with a single resource object, the Array will have one
+element.
+
+You can access all the other members of the [top-level document](http://jsonapi.org/format/#document-top-level) (all the objects returned are covered below):
+
+	doc.links    # Hash of Link objects
 	doc.included # Inclusions object
 	doc.meta     # Meta object
 	doc.jsonapi  # JsonApi object
-
-The ```#data``` attribute will always be an Array (or nil). If the document's
-```data``` member is an object because the document contains only one resource
-it will still be constructed as an ```Array``` (with one member) in the
-```Document``` object.
 
 There are, in addition, methods to test whether any of the above members are
 present:
@@ -66,178 +75,251 @@ present:
 
 ### Resources
 
-A [Resource](http://jsonapi.org/format/#document-resource-objects) is a single JSON-API object. Given this JSON:
+Every `Subjoin::Resource` has a `type` and `id`. The JSON response:
 
-	{
-	  "data": {
-		"type": "articles",
-		"id": "1",
-		"attributes": {
-		  "title": "JSON API paints my bikeshed!"
-		},
-		"links": {
-		  "self": "http://example.com/articles/1"
-		},
-		"relationships": {
-		  "author": {
-			"links": {
-			  "self": "http://example.com/articles/1/relationships/author",
-			  "related": "http://example.com/articles/1/author"
-			},
-			"data": { "type": "people", "id": "9" }
-		  },
-		  "comments": {
-			"links": {
-			  "self": "http://example.com/articles/1/relationships/comments",
-			  "related": "http://example.com/articles/1/comments"
-			},
-			"data": [
-			  { "type": "comments", "id": "5" },
-			  { "type": "comments", "id": "12" }
-			]
-		  }
-		}
-	  }
-	}
+    {
+      "data": {
+      "type": "articles",
+      "id": "1",
+      "attributes": {
+        "title": "JSON API paints my bikeshed!"
+	  },
+	  ...
+    }
 
-The equivalent ```Subjoin::Resource``` object has a number of methods for
-accessing the data.
+would correspond to:
 
-    doc = Subjoin::Document.new(URI("http://example.com/articles/1"))
-	article = doc.data.first             # the Resource
-    article.type                         # "articles"
-    article.id                           # "1"
-	article.links                        # A Subjoin::Links object
-	article.links["self"].href           # "http://example.com/articles/1"
-    article.relationships                # A Hash of Subjoin::Relationship objects
+    article = doc.data.first
+    article.type
+	  => "articles"
+    article.id
+      => "1"
 
-Attributes are accessible directly through like Hash keys or through the
-```attributes``` Hash
+The attributes of a `Subjoin::Resource` object, or any object that
+includes `Subjoin::Attributable`, can be accessed like hash on the
+object itself:
 
-    article["title"]               # Both return 
-    article.attributes["title"] # "JSON API paints my bikeshed!"
+    article["title"]
+      => "JSON API paints my bikeshed!"
 
-### Resource Identifiers
+You can also get the entire attributes Hash as
+`Subjoin::Attributable#attributes`:
 
-[Resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects)
-occur in Relationship objects as pointers to other resources by ```type``` and
-```id``` (they may have, optionally, a ```meta``` attribute as well). Subjoin
-also constructs an Identifier object out of the ```type``` and ```id```
-attributes of a Resource (always without the ```meta```).
+    article.attributes # Hash
+    article.attributes.keys
+      => ["title"]
+    article.attributes["title"]
+    => "JSON API paints my bikeshed!"
 
-    article.identifier      # Identifier.object
-    article.identifier.type # "articles"
-	article.identifier.id   # "1"
-    article.type            # "articles", from the Identifier object
-	article.id              # "1" from the Identifier object
+The other expected members of a
+[resource object](http://jsonapi.org/format/#document-resource-objects) are
+available. The objects returned by these methods are all explained below:
 
-Two Identifier objects are considered to be equal (==) if both their `type` and
-`id` match. The ```meta``` attribute is ignored in tests for equality.
+    article.links         # Hash of Link objects
+    article.relationships # Array of Relationship objects
+    article.meta          # Meta object
 
-### Relationships
+As with `Subjoin::Document`, there are methods to see if any of the above are available
 
-Resources may have
-[relationships](http://jsonapi.org/format/#document-resource-object-relationships)
-to other resources. There are two methods to access these:
-{Subjoin::Resource#relationships} which returns
-{Subjoin::Relationship} objects and {Subjoin::Resource#rels} which
-resolves the relationship linkages and returns to related
-{Subjoin::Resource} objects themselves. Using #relationships:
-
-
-    article.relationships                    # A Hash of
-                                             #   Subjoin::Relationship objects
-    article.relationships.keys               # ["author", "comments"]
-	article.relationships["author"]          # Subjoin::Links object
-	article.relationships["author"].links    # Array of Subjoin::Link objects
-	article.relationships["author"].type     # "people"
-	article.relationships["author"].linkages # Array of Identifiers
-
-The related resources can be loaded from their links:
-
-    article.relationships["author"].links.links["self"].get
-
-Or, in a compound document, the ```Identifiers``` in the ```linkages``` array can be used to look up included resources:
-
-	identifier = article.relationships.linkages.first
-    document.included[identifier] # Returns the related resource
-
-It will almost always be simpler to use {Subjoin::Resource#rels}:
-
-    article.rels                      # A Hash of Arrays of
-                                      #   Subjoin::Resource objects
-    article.rels.keys                 # ["author", "comments"]
-    article.rels["author"].first      # Subjoin::Resource object. Remember,
-                                      #   #rels always returns an Array
-    article.rels("author").first      # Another way to say the same thing
-    article.rels["author"].first.type # "people"
+    article.has_links?
+	article.has_meta?
 
 ### Links
 
-```links``` attributes are instantiated as Subjoin::Links objects, accessible through a ```#links``` method on any object that can have links. ```Links``` abjects contain ```Subjoin::Link``` objects, which are accessed by key.
+`Subjoin::Document`, `Subjoin::Resource`, and `Subjoin::Relationship` can all
+have [links](http://jsonapi.org/format/#document-links). They all have
+the `Subjoin::Linkable#links` method which returns a Hash of `Subjoin::Link`
+objects:
 
-JSON-API allows for two formats: one simply with a link
+	article.links.keys
+	  => ["self"]
+    article.links["self"].href.to_s
+      => "http://example.com/articles/1"
+
+JSON-API allows for two link object formats. One simply has a link
 
     "links": {
-      "self": "http://example.com/posts"
+      "self": "http://example.com/articles/1"
     }
 
-and one with an ```href``` attribute and ```meta``` object:
+and one has an `href` attribute and `meta` object:
 
-	"links": {
-	  "related": {
-		"href": "http://example.com/articles/1/comments",
-		"meta": {
-		  "count": 10
-		}
-	  }
-	}
+    "links": {
+      "related": {
+        "href": "http://example.com/articles/1/comments",
+        "meta": {
+          "count": 10
+        }
+      }
+    }
 
-```Subjoin::Link``` objects treat either variation like the latter.
+Subjoin treats either variation like the latter:
 
-    # Instantiated from the more complete format:
-    article.links["related"].href       # "http://example.com/articles/1/comments"
-    article.links["related"].has_meta?  # true
-    article.links["related"].meta.count # 10
+    article.links["self"].href.to_s
+      => "http://example.com/articles/1"
+    article.links["self"].has_meta?
+      => false
+    article.links["self"].meta?
+      => nil
 
-    # Instantiated from the simpler format:
-    article.links["self"].href          # "http://example.com/posts"
-    article.links["related"].has_meta?  # false
-    article.links["related"].meta       # nil
+    article.links["related"].href.to_s
+      => "http://example.com/articles/1/comments"
+    article.links["related"].has_meta?
+      => true
+    article.links["related"].meta["count"]
+      => 10
 
-If you have a ```Link``` you can get a new ```Document```
+Note that the `href` is always returned as a `URI` object. If you have a `Subjoin::Link` you can get the corresponding `Subjoin::Document`:
 
     article.links["related"].get # Same thing as Subjoin::Document.new
                                  # with the URL
 
-### Included Resources
+### Resource Identifiers
 
-Included resources are gathered into a ```Subjoin::Inclusions```
-object, and can be accessed in several ways. In the jsonapi.org
-[compund document example](http://jsonapi.org/format/#document-compound-documents),
-the ```article``` has a ```relationship``` to an ```author``` with the
-type and id (```linkage```) of "person" and "9". In a Subjoin
-```Document```, the included ```Resource``` can be fetched via the
-```Identifer``` from the ```linkages``` of a ```Relationship```:
+Before getting to relationships, we should take a minute to look at
+[resource identifiers](http://jsonapi.org/format/#document-resource-identifier-objects). Above,
+we saw that every `Subjoin::Resource` has a `type` and `id`.
 
-    doc = Subjoin::Document.new(""http://example.com/articles/1")
-	article = doc.data.first
-	authrel = article.relationships["author"].linkages.first # Identifier
-	auth = doc.included[authrel]                             # Resource 
+    article.type # "articles"
+	article.id   # "1"
 
-By an array containing a type and an id:
+Though the above attributes exist individually, these two attributes
+work together as a compound key and are, in fact put together in
+Subjoin as a `Subjoin::Identifier` object:
 
-    auth = doc.included[["people", "9"]]
+    article.identifier      # Identifier object
+    article.identifier.type # "articles"
+	article.identifier.id   # "1"
 
-By index
+`Subjoin::Identifier` objects are used for equality: two
+`Subjoin::Resource` objects are considered equal if they have equal
+`Identifer`s:
 
-    auth = doc.included[0]
+    article1 == article2                                    # Really tests...
+    article1.identifier == article2.identifier              # Really tests...
+	article1.identifier.type == article2.identifier.type &&
+	    article1.identifer.id == article2.identifier.id
 
-All these methods return ```nil``` if there is so matching
-resource. There also a couple of convenience methods:
+More importantly, identifiers occur in Relationship objects as
+pointers to other resources. These pointers are called
+[linkages](http://jsonapi.org/format/#document-resource-object-linkage):
 
-    doc.included.all   # Get the full array of included resources
-    doc.included.first # Get the first included resource
+    article.relationships.author.linkages # Array of Identifier objects
+
+They may have, optionally, a `meta` attribute as well, and `meta`
+attributes are ignored in tests for equality.
+
+### Relationships, Linkages, Included Resources
+
+Okay, now we can get to how you'll really use JSON-API resources and why you would JSON-API over other options: resource linking and included resources.
+
+In many RESTful APIs, resources have embedded child resources which
+is, in my experience, a principle source of the bikeshedding arguments
+that JSON-API tries to avoid ("should X be a child of Y, or Y a child
+of X?" "How should the X response be different when it is achild of
+another resource?"). Instead of nesting and embedding, in JSON-API
+resources may have
+[relationships](http://jsonapi.org/format/#document-resource-object-relationships)
+to other resources.
+
+    article.relationships        # A Hash of Subjoin::Relationship objects
+    article.relationships.keys
+      => ["author", "comments"]
+
+This much tells you that an "article" can have an "author" and
+"comments". In Subjoin, relationships are instantiated as
+`Subjoin::Relationship` objects whose two important properties are
+`links` and `linkages`. `Subjoin::Relationship` are
+`Subjoin::Linkable` so `links` works as it does in other objects.
+
+    author = article.relationships["author"]    # Relationship object
+	author.links.keys
+      => ["self", "related"]
+    author.links["related"].to_s
+      => "http://example.com/articles/1/author"
+    author.links["related"].get                 # Get a new Document
+
+Alongside `links`, `linkages` give you resource identifiers for the
+related resources. while the "comments" `link` tells us how to get a
+document with all the related comments:
+
+    comments.links["self"].to_s
+      => "http://example.com/articles/1/relationships/comments"
+
+The corresponding `linkages` returns an Array of
+`Subjoin::Identifier` that are pointers to specific resources:
+
+    comments = article.relationships["comments"]
+    comments.linkages.count
+      => 2
+
+This tells us that there are two related comments. If we look at one,
+we can get the type and id:
+
+    comments.linkages[0].type
+      => "comments"
+    comments.linkages[0].id
+      => "5"
+
+So far so good, but now what? [Inclusion](http://jsonapi.org/format/#fetching-includes)
+
+With Subjoin, you can request that these related resources be included
+in the document, one of three ways:
+
+    # URI parameters
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1?include=author,comments"))
+
+    # Parameters Hash with a string
+    doc = Subjoin::Document.new(URI("http://example.com/article/1s", {"include" => "author,comments"}))
+
+    # Parameters Hash with an array of strings
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => ["author" ,"comments"]}))
+
+All three are equivalent. The array of strings version works especially well with relationship keys
+
+    doc2 = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => articles.relationships.keys}))
+
+When a document is requested with included resources, they can be accessed via `included`
+
+    # Get the document
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => ["author" ,"comments"]}))
+
+	# Get the article
+    article = doc.data.first
+
+	# Get the realted author identifier
+    auth_identifier = article.related["author"].linkages.first
+    auth_identifier.type
+      => "people"
+    auth_identifier.id
+      => "9"
+
+    # Get the embedded resource
+    doc.has_included?
+      => true
+
+    # Look up included resource by identifier
+    author = doc.included[auth_identifier]
+
+    # Now we have access to the whole author resource
+	author.type
+      => "people"
+    author.id
+      => "9"
+    author["twitter"]
+      => "dgeb"
+
+If that sounds kind of complicated, it is. But you can...
+
+### Let Subjoin resolve the linkages for you
+
+To make all this easier, `Subjoin::Resource` provides a `rels` method that does all this under the hood:
+
+    article.rels.keys
+      => ["author", "comments"]
+    author = article.rels["author"] # Returns the author Resource
+    author["twitter"]
+      => "dgeb"
 
 ### Meta Information
 
@@ -268,13 +350,81 @@ The data might be accessed in this way:
     article.meta           # Meta object
     article.meta.copyright # "Copyright 2015 Example Corp."
 
+## Using Inheritance
+
+Another way to use Subjoin is via inheritance. Using this approach you
+create your own classes to represent JSON-API resource types of a
+specific JSON-API server implementation. These classes must be
+sub-classes of `Subjoin::Resource` and must include
+`Subjoin::Inheritable`, which adds some constants and methods that
+`Subjoin::Document` will use to instantiate objects correctly. Next
+you must override a class variable, `ROOT_URI`, which should be the
+root of all URIs of the API. For instance, in the examples above,
+"http://example.com" would be the value of `ROOT_URI`. By default,
+Subjoin will use the lower-cased name of the class as the type in
+URIs. If the class name does not match the type, you can further
+override `TYPE_PATH` to indicate the name (or longer URI fragment)
+that should be used in URIs to request the resource type.
+
+Your custom classes must also be part of the ```Subjoin``` module. You
+should probably create one sub-class of `Subjoin::Resource` that
+overrides `ROOT_URI`, and then create other classes as sub-classes of
+this:
+
+    require "subjoin"
+
+    module Subjoin
+      # Use this class as the parent of further subclasses.
+      # They will inherit the ROOT_URI defined here
+      class ExampleResource < Subjoin::Resource
+        include Inheritable
+        ROOT_URI="http://example.com"
+      end
+
+      # Subjoin will make requests to http://example.com/articles
+      class Articles < ExampleResource
+      end
+
+      # Use TYPE_PATH if you don't want to name the class the same thing as
+      # the type
+      class ArticleComments < ExampleResource
+        TYPE_PATH="comments"
+      end
+    end
+
+Now, when you get a document, the resources in it will be mapped to an available type:
+
+    doc = Subjoin::Document.new(URI("http://example.com/articles/1", {"include" => ["author" ,"comments"]}))
+
+	# We mapped the article type to the Article class
+    article = doc.data.first
+    article.class
+      => Subjoin::Article
+
+    # We mapped the comment type to the ArticleComment class
+    comment = article.rels["comments"].first
+    comment.class
+      => Subjoin::ArticleComment
+
+	# We didn't map the person type to anything, so we get a Resource
+	author = article.rels["author"].first
+    author.class
+      => Subjoin::Resource
+
+## Limitations
+
+Subjoin currently only supports GET requests.
+
+Some features, such as pagination, should work generically but could
+have more convenient methods to handle them.
+
 ## Why is it called "Subjoin"
 
 Nice word. Sounds coder-y. Has most of the letters of "Ruby JSON-API".
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/subjoin/fork )
+1. Fork it ( https://github.com/seanredmond/subjoin/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)

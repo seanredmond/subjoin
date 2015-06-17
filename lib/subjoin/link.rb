@@ -12,7 +12,7 @@ module Subjoin
         @href = URI(data)
       else
         @href = URI(data['href'])
-        load_meta(data['meta'])
+        @meta = load_meta(data['meta'])
       end
     end
 

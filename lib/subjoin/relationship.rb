@@ -1,4 +1,7 @@
 module Subjoin
+  # A related resource link, providing access to resource objects
+  # linked in a relationship
+  # @see http://jsonapi.org/format/#document-resource-object-related-resource-links
   class Relationship
     include Linkable
     include Metable
@@ -6,11 +9,13 @@ module Subjoin
     attr_reader :links, :linkages
     def initialize(data, doc)
       @document = doc
-      load_links(data['links'])
+      @links = load_links(data['links'])
       @linkages = load_linkages(data['data'], doc)
-      load_meta(data['meta'])
+      @meta = load_meta(data['meta'])
     end
 
+    # Resolve available linkages and return related resources
+    # @return [Array<Subjoin::Resource>]
     def lookup
       return [] unless @document.has_included?
       @linkages.map{|l| @document.included[l]}

@@ -1,8 +1,11 @@
 module Subjoin
+  # A JSON-API Resource object
+  # @see http://jsonapi.org/format/#document-resource-objects
   class Resource
     include Attributable
     #include Keyable
     include Linkable
+    include Metable
 
     # The relationships specified for the object
     # @return [Hash<Relationship>]
@@ -26,19 +29,22 @@ module Subjoin
         raise UnexpectedTypeError.new
       end
 
-      #load_key(data)
-
       @identifier = Identifier.new(data['type'], data['id'])
       
       load_attributes(data['attributes'])
-      load_links(data['links'])
+      @links = load_links(data['links'])
       @relationships = load_relationships(data['relationships'], @document)
+      @meta = load_meta(data['meta'])
     end
 
+    # Resource type
+    # @return [String]
     def type
       @identifier.type
     end
 
+    # Resource id
+    # @return [String]
     def id
       @identifier.id
     end
@@ -52,7 +58,11 @@ module Subjoin
     #   came itself.
     # @return [Hash, Array<Subjoin:Resource>, nil] If called with a spec
     # parameter, the return value will be an Array of {Subjoin::Resource}
-    # objects corresponding to the key, or nil if that key doesn't exist. If called without a spec parameter, the return value will be a Hash whose keys are the same as {relationships}, but whose values are Arrays of resolved {Resource} objects. In practice this means that you have a choice of idioms (method vs. hash) since
+    # objects corresponding to the key, or nil if that key doesn't exist. If
+    # called without a spec parameter, the return value will be a Hash whose
+    # keys are the same as {Resource#relationships}, but whose values are
+    # Arrays of resolved {Resource} objects. In practice this means that you
+    # have a choice of idioms (method vs. hash) since
     #
     #    obj.rels("key")
     #

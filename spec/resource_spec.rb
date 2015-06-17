@@ -20,8 +20,9 @@ describe Subjoin::Resource do
       context "passing a URI as a parameter" do
         it "should get the same a parameter" do
           expect_any_instance_of(Faraday::Connection)
-            .to receive(:get).with(URI("http://example.com/articles/2"), {})
-                 .and_return(double(Faraday::Response, :body => ARTICLE))
+            .to receive(:get).
+                 with(URI("http://example.com/articles/2"), {}, Hash).
+                 and_return(double(Faraday::Response, :body => ARTICLE))
 
           @articles = Subjoin::Resource.
                       new(URI("http://example.com/articles/2"))
@@ -71,7 +72,7 @@ describe Subjoin::Resource do
 
     context "with no parameter" do
       it "returns a Hash of all the links" do
-        expect(@article.links).to be_an_instance_of Subjoin::Links
+        expect(@article.links.map{|k,v| v.class}.uniq).to eq [Subjoin::Link]
       end
     end
 
@@ -123,6 +124,16 @@ describe Subjoin::Resource do
           expect(@article.rels("author")).to be_nil
         end
       end
+    end
+  end
+
+  describe "#meta" do
+    before :each do
+      @article = Subjoin::Resource.new(URI("http://example.com/articles/1"))
+    end
+
+    it "returns a Meta object" do
+      expect(@article.meta).to be_an_instance_of Subjoin::Meta
     end
   end
 end

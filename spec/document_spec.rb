@@ -105,8 +105,8 @@ describe Subjoin::Document do
 
   describe "#links" do
     context "when there are links" do
-      it "is a Links object" do
-        expect(@doc.links).to be_an_instance_of(Subjoin::Links)
+      it "is a Hash of Link objects" do
+        expect(@doc.links.map{|k, v| v.class}.uniq).to eq [Subjoin::Link]
       end
 
       it "has an expected link" do
