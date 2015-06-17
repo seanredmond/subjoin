@@ -1,4 +1,6 @@
 module Subjoin
+  # A JSON-API Resource object
+  # @see http://jsonapi.org/format/#document-resource-objects
   class Resource
     include Attributable
     #include Keyable
@@ -35,10 +37,14 @@ module Subjoin
       @meta = load_meta(data['meta'])
     end
 
+    # Resource type
+    # @return [String]
     def type
       @identifier.type
     end
 
+    # Resource id
+    # @return [String]
     def id
       @identifier.id
     end
