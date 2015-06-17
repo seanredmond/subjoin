@@ -9,12 +9,23 @@ describe Subjoin do
         to be_an_instance_of(Hash)
     end
 
+    it "should send the correct accept header" do
+      allow_any_instance_of(Faraday::Connection).
+        to receive(:get).
+            with(
+              URI,
+              Hash,
+              hash_including("Accept" => "application/vnd.api+json")
+            ).and_return(double(Faraday::Response, :body => ARTICLE))
+      Subjoin::get(URI("http://example.com/articles"))
+    end
+
     context "with a hash of parameters" do
       context "including include" do
         before :each do
           expect_any_instance_of(Faraday::Connection).
             to receive(:get).
-                with(URI, hash_including("include" => "author,comments")).
+                with(URI, hash_including("include" => "author,comments"), Hash).
                 and_return(double(Faraday::Response, :body => ARTICLE))
         end
         
@@ -37,7 +48,7 @@ describe Subjoin do
         before :each do
           expect_any_instance_of(Faraday::Connection).
             to receive(:get).
-                with(URI, hash_including("fields[article]" => "title,pagecount")).
+                with(URI, hash_including("fields[article]" => "title,pagecount"), Hash).
                 and_return(double(Faraday::Response, :body => ARTICLE))
         end
 

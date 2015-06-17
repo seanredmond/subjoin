@@ -15,8 +15,6 @@ require "subjoin/relationship"
 require "subjoin/document"
 require "subjoin/version"
 
-# TODO: recognize URI parameters: include, fields[], sort, page, filter
-
 module Subjoin
 
   # Connection used for all HTTP resquests
@@ -31,7 +29,10 @@ module Subjoin
     params = {} if params.nil?
     uri_params = uri.query.nil? ? {} : param_flatten(CGI::parse(uri.query))
     final_params = uri_params.merge(stringify_params(params))
-    response = @@conn.get(uri, final_params)
+    response = @@conn.get(uri,
+                          final_params,
+                          {"Accept" => "application/vnd.api+json"}
+                         )
     data = JSON.parse response.body
 
     if data.has_key?("errors")
